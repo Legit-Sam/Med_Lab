@@ -7,6 +7,7 @@ import {
   ElevenLabsLanguage,
   generateAndStoreSpeech,
 } from "@/lib/elevenlabs";
+import { createRequestId, getErrorMessage } from "@/lib/api-errors";
 
 const languageConfig = {
   yoruba: {
@@ -27,6 +28,8 @@ export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const requestId = createRequestId();
+
   try {
     const user = await getCurrentDbUser();
     if (!user) {
@@ -85,11 +88,15 @@ export async function POST(
 
     return NextResponse.json({ audioUrl }, { status: 200 });
   } catch (error) {
-    console.error("Report audio API error:", error);
+    const message = getErrorMessage(error);
+    console.error("Report audio API error:", { requestId, message, error });
     return NextResponse.json(
       {
         error:
-          error instanceof Error ? error.message : "Failed to generate report audio.",
+          process.env.NODE_ENV === "production"
+            ? `Failed to generate report audio. Reference: ${requestId}`
+            : message,
+        requestId,
       },
       { status: 500 }
     );

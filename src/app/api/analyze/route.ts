@@ -4,10 +4,13 @@ import { reports } from "@/db/schema";
 import { processLabFile } from "@/lib/ocr";
 import { eq } from "drizzle-orm";
 import { getCurrentDbUser } from "@/lib/current-user";
+import { createRequestId, getErrorMessage } from "@/lib/api-errors";
 
 export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
+  const requestId = createRequestId();
+
   try {
     const user = await getCurrentDbUser();
     if (!user) {
@@ -72,11 +75,8 @@ export async function POST(req: NextRequest) {
         .set({ status: "failed" })
         .where(eq(reports.id, report.id));
 
-      console.error("Processing error:", processingError);
-      const message =
-        processingError instanceof Error
-          ? processingError.message
-          : "Failed to process lab result";
+      const message = getErrorMessage(processingError);
+      console.error("Processing error:", { requestId, message, processingError });
       const isTemporaryAiError = /temporarily busy|service unavailable|high demand/i.test(
         message
       );
@@ -85,14 +85,22 @@ export async function POST(req: NextRequest) {
         {
           error: message,
           reportId: report.id,
+          requestId,
         },
         { status: isTemporaryAiError ? 503 : 422 }
       );
     }
   } catch (error) {
-    console.error("Analyze API error:", error);
+    const message = getErrorMessage(error);
+    console.error("Analyze API error:", { requestId, message, error });
     return NextResponse.json(
-      { error: "Internal server error" },
+      {
+        error:
+          process.env.NODE_ENV === "production"
+            ? `Analysis could not start. Reference: ${requestId}`
+            : message,
+        requestId,
+      },
       { status: 500 }
     );
   }

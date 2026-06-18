@@ -18,7 +18,10 @@ type UploadedFile = { fileUrl: string; name: string; type?: string };
 type AnalyzeResponse = {
   report?: { id: string };
   error?: string;
+  errorMessage?: string;
+  errorType?: string;
   reportId?: string;
+  requestId?: string;
 };
 
 function getTypeFromName(name: string): string {
@@ -55,7 +58,7 @@ export default function FileUploader() {
         const data = await readAnalyzeResponse(response);
 
         if (!response.ok) {
-          throw new Error(data.error || "Analysis failed");
+          throw new Error(formatAnalyzeError(data));
         }
 
         const reportId = data.report?.id;
@@ -184,6 +187,16 @@ export default function FileUploader() {
       </div>
     </div>
   );
+}
+
+function formatAnalyzeError(data: AnalyzeResponse) {
+  if (data.error) return data.error;
+  if (data.errorMessage) {
+    const reference = data.requestId ? ` Reference: ${data.requestId}` : "";
+    return `${data.errorMessage}${reference}`;
+  }
+
+  return "Analysis failed.";
 }
 
 async function readAnalyzeResponse(response: Response): Promise<AnalyzeResponse> {
