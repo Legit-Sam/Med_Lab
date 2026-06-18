@@ -67,7 +67,14 @@ export default function AudioReaderDashboard({
     };
   }, [activeReport]);
 
-  const currentText = contentMap ? contentMap[lang] || contentMap.english : "";
+  const rawText = contentMap ? contentMap[lang] || contentMap.english : "";
+  const currentText = useMemo(() => {
+    if (!rawText) return "";
+    return rawText
+      .replace(/\*\*/g, "")
+      .replace(/^#+\s+/gm, "")
+      .trim();
+  }, [rawText]);
 
   const paragraphs = useMemo(() => {
     return currentText

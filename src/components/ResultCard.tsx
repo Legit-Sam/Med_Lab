@@ -49,7 +49,14 @@ export default function ResultCard({
     igbo: igboAudioUrl,
   };
 
-  const currentText = contentMap[lang] || english;
+  const rawText = contentMap[lang] || english;
+  const currentText = useMemo(() => {
+    if (!rawText) return "";
+    return rawText
+      .replace(/\*\*/g, "")
+      .replace(/^#+\s+/gm, "")
+      .trim();
+  }, [rawText]);
 
   // Split and group the paragraphs into clinical sections
   const sections = useMemo(() => {
