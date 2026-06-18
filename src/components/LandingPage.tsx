@@ -127,7 +127,7 @@ export default function LandingPage() {
               <Activity className="h-5 w-5 text-white" />
             </div>
             <span className="text-lg font-bold tracking-tight">
-              Lab<span className="text-primary">Explain</span>
+              Wasobi<span className="text-primary">Care</span>
             </span>
           </div>
           <div className="flex items-center gap-4">

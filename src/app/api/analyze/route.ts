@@ -5,6 +5,8 @@ import { processLabFile } from "@/lib/ocr";
 import { eq } from "drizzle-orm";
 import { getCurrentDbUser } from "@/lib/current-user";
 
+export const maxDuration = 60;
+
 export async function POST(req: NextRequest) {
   try {
     const user = await getCurrentDbUser();
@@ -71,15 +73,20 @@ export async function POST(req: NextRequest) {
         .where(eq(reports.id, report.id));
 
       console.error("Processing error:", processingError);
+      const message =
+        processingError instanceof Error
+          ? processingError.message
+          : "Failed to process lab result";
+      const isTemporaryAiError = /temporarily busy|service unavailable|high demand/i.test(
+        message
+      );
+
       return NextResponse.json(
         {
-          error:
-            processingError instanceof Error
-              ? processingError.message
-              : "Failed to process lab result",
+          error: message,
           reportId: report.id,
         },
-        { status: 422 }
+        { status: isTemporaryAiError ? 503 : 422 }
       );
     }
   } catch (error) {

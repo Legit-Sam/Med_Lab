@@ -15,6 +15,11 @@ type UploadState =
   | { type: "error"; message: string };
 
 type UploadedFile = { fileUrl: string; name: string; type?: string };
+type AnalyzeResponse = {
+  report?: { id: string };
+  error?: string;
+  reportId?: string;
+};
 
 function getTypeFromName(name: string): string {
   const ext = name.split(".").pop()?.toLowerCase();
@@ -47,15 +52,20 @@ export default function FileUploader() {
           }),
         });
 
-        const data = await response.json();
+        const data = await readAnalyzeResponse(response);
 
         if (!response.ok) {
           throw new Error(data.error || "Analysis failed");
         }
 
-        setState({ type: "success", reportId: data.report.id });
+        const reportId = data.report?.id;
+        if (!reportId) {
+          throw new Error("Analysis completed without a report ID.");
+        }
+
+        setState({ type: "success", reportId });
         setTimeout(() => {
-          router.push(`/report/${data.report.id}`);
+          router.push(`/report/${reportId}`);
         }, 1200);
       } catch (err) {
         setState({
@@ -174,4 +184,22 @@ export default function FileUploader() {
       </div>
     </div>
   );
+}
+
+async function readAnalyzeResponse(response: Response): Promise<AnalyzeResponse> {
+  const contentType = response.headers.get("content-type") ?? "";
+
+  if (contentType.includes("application/json")) {
+    return (await response.json()) as AnalyzeResponse;
+  }
+
+  const text = await response.text();
+  if (/inactivity timeout/i.test(text) || text.trim().startsWith("<")) {
+    return {
+      error:
+        "The analysis took too long for the production server. Please try again with a clearer image or a smaller file.",
+    };
+  }
+
+  return { error: text || "Analysis failed." };
 }

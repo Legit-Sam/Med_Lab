@@ -3,6 +3,7 @@ import type { AnalysisResult } from "@/types";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 const GEMINI_MAX_ATTEMPTS = 3;
+const GEMINI_RETRY_TIME_BUDGET_MS = 20_000;
 
 const ANALYSIS_PROMPT = `You are a professional medical laboratory report interpretation assistant.
 
@@ -240,11 +241,16 @@ async function generateContentWithRetry<T>(operation: () => Promise<T>) {
   let lastError: unknown;
 
   for (let attempt = 1; attempt <= GEMINI_MAX_ATTEMPTS; attempt += 1) {
+    const attemptStartedAt = Date.now();
     try {
       return await operation();
     } catch (error) {
       lastError = error;
+      const elapsedMs = Date.now() - attemptStartedAt;
       if (!isRetryableGeminiError(error) || attempt === GEMINI_MAX_ATTEMPTS) {
+        break;
+      }
+      if (elapsedMs > GEMINI_RETRY_TIME_BUDGET_MS) {
         break;
       }
 

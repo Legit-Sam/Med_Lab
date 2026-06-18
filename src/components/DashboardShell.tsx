@@ -74,7 +74,7 @@ function SidebarContent({
             className="text-sm font-bold tracking-tight text-foreground leading-none"
             style={{ fontFamily: "var(--font-display)" }}
           >
-            Lab<span className="text-accent">Explain</span>
+            Wasobi<span className="text-accent">Care</span>
           </span>
           <span className="text-[10px] text-muted-foreground leading-none mt-0.5">
             Medical Lab AI
