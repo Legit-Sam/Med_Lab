@@ -17,7 +17,7 @@ import { redirect } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 export const metadata = {
-  title: "Dashboard — LabExplain",
+  title: "Dashboard — WazobiCare",
 };
 
 /* ─── Tiny SVG sparkline — token-colored, no deps ─── */

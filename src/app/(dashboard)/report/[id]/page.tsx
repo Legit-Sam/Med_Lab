@@ -17,7 +17,7 @@ import {
 import { formatDistanceToNow, format } from "date-fns";
 
 export const metadata = {
-  title: "Lab Report — LabExplain Nigeria",
+  title: "Lab Report — WazobiCare Nigeria",
 };
 
 type Props = {
@@ -182,7 +182,7 @@ export default async function ReportPage({ params }: Props) {
 
             <div className="pt-2 border-t border-border/60">
               <p className="text-[9px] text-muted-foreground italic leading-relaxed">
-                Disclaimer: LabExplain analyses do not replace clinical laboratory diagnosis reports.
+                Disclaimer: WazobiCare analyses do not replace clinical laboratory diagnosis reports.
               </p>
             </div>
           </div>

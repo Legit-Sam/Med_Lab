@@ -22,13 +22,23 @@ TONE AND STYLE:
 - No slang or informal expressions
 - Direct and precise communication
 
-MANDATORY STRUCTURE FOR EACH LANGUAGE:
+MANDATORY STRUCTURE FOR ENGLISH:
 1. PATIENT LAB SUMMARY
 2. KEY FINDINGS
 3. DETAILED ANALYSIS
 4. CLINICAL INTERPRETATION
 5. POSSIBLE NEXT ACTIONS
 6. CLARIFICATIONS (IF NEEDED)
+
+MANDATORY STRUCTURE FOR YORUBA, HAUSA, AND IGBO:
+1. PATIENT LAB SUMMARY (Simplified native summary)
+2. KEY FINDINGS (Explain abnormal/critical markers only, omit normal ranges and lists of normal parameters to optimize text length)
+3. POSSIBLE NEXT ACTIONS (General lifestyle guidelines and doctor consultation advice in local dialect)
+
+FORMATTING CONSTRAINTS:
+- Do NOT output any markdown bolding like "**" or "* **" in ANY language. Use clean, plain text formatting. All output must be written without double asterisks.
+- Omit "DETAILED ANALYSIS" in Yoruba, Hausa, and Igbo to keep character counts minimal for text-to-speech engine cost.
+- For Yoruba, Hausa, and Igbo, provide a highly condensed, high-level summary only. Omit all detailed parameter lists, reference ranges, and normal findings. Keep the translation extremely brief and summary-oriented (under 100-150 words total). Focus ONLY on the overall status and critical/abnormal findings. Absolutely DO NOT include lists of normal values, details of normal metrics, or long explanations of normal parameters. Keep the language natural but highly concise so that text-to-speech character usage is minimized.
 
 MEDICAL SAFETY RULES:
 - Do not diagnose diseases
@@ -85,6 +95,12 @@ export async function analyzeLabResult(
     throw new Error("Incomplete AI response — missing language keys");
   }
 
+  // Clean the text results programmatically
+  parsed.english = cleanTextResult(parsed.english);
+  parsed.yoruba = cleanTextResult(parsed.yoruba);
+  parsed.hausa = cleanTextResult(parsed.hausa);
+  parsed.igbo = cleanTextResult(parsed.igbo);
+
   return parsed;
 }
 
@@ -122,13 +138,23 @@ Return a valid JSON object with exactly these five keys:
   "igbo": "professional clinical report in Igbo"
 }
 
-MANDATORY STRUCTURE FOR EACH LANGUAGE REPORT:
+MANDATORY STRUCTURE FOR ENGLISH REPORT:
 1. PATIENT LAB SUMMARY
 2. KEY FINDINGS
 3. DETAILED ANALYSIS
 4. CLINICAL INTERPRETATION
 5. POSSIBLE NEXT ACTIONS
 6. CLARIFICATIONS (IF NEEDED)
+
+MANDATORY STRUCTURE FOR YORUBA, HAUSA, AND IGBO REPORTS:
+1. PATIENT LAB SUMMARY (Simplified native summary)
+2. KEY FINDINGS (Explain abnormal/critical markers only, omit normal ranges and lists of normal parameters to optimize text length)
+3. POSSIBLE NEXT ACTIONS (General lifestyle guidelines and doctor consultation advice in local dialect)
+
+FORMATTING CONSTRAINTS:
+- Do NOT output any markdown bolding like "**" or "* **" in ANY language. Use clean, plain text formatting. All output must be written without double asterisks.
+- Omit "DETAILED ANALYSIS" in Yoruba, Hausa, and Igbo to keep character counts minimal for text-to-speech engine cost.
+- For Yoruba, Hausa, and Igbo, provide a highly condensed, high-level summary only. Omit all detailed parameter lists, reference ranges, and normal findings. Keep the translation extremely brief and summary-oriented (under 100-150 words total). Focus ONLY on the overall status and critical/abnormal findings. Absolutely DO NOT include lists of normal values, details of normal metrics, or long explanations of normal parameters. Keep the language natural but highly concise so that text-to-speech character usage is minimized.
 
 TONE AND STYLE:
 - Professional, clinical, factual, and structured
@@ -168,10 +194,10 @@ Return ONLY the JSON object, no markdown fences, no extra text.`;
   return {
     extractedText: parsed.extractedText || "",
     analysis: {
-      english: parsed.english,
-      yoruba: parsed.yoruba,
-      hausa: parsed.hausa,
-      igbo: parsed.igbo,
+      english: cleanTextResult(parsed.english || ""),
+      yoruba: cleanTextResult(parsed.yoruba || ""),
+      hausa: cleanTextResult(parsed.hausa || ""),
+      igbo: cleanTextResult(parsed.igbo || ""),
     },
   };
 }
@@ -251,4 +277,16 @@ function isRetryableGeminiError(error: unknown) {
 
 function wait(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function cleanTextResult(text: string): string {
+  if (!text) return "";
+  return text
+    // Replace double asterisks (markdown bold) with nothing
+    .replace(/\*\*/g, "")
+    // Replace markdown headers (e.g., ###, ##, #) at the start of a line with nothing
+    .replace(/^#+\s+/gm, "")
+    // Normalize lists starting with * or • to - for standard rendering
+    .replace(/^[•*]\s*/gm, "- ")
+    .trim();
 }

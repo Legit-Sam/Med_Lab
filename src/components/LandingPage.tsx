@@ -136,7 +136,7 @@ export default function LandingPage() {
               <Link
                 href="/dashboard"
                 className={cn(
-                  buttonVariants({ variant: "default" }),
+                  buttonVariants({ variant: "primary" }),
                   "shadow-md shadow-primary/10 hover:shadow-primary/20"
                 )}
               >
@@ -153,7 +153,7 @@ export default function LandingPage() {
                 <Link
                   href="/sign-up"
                   className={cn(
-                    buttonVariants({ variant: "default" }),
+                    buttonVariants({ variant: "primary" }),
                     "shadow-md shadow-primary/10 hover:shadow-primary/20"
                   )}
                 >
@@ -256,7 +256,7 @@ export default function LandingPage() {
             <div className="overflow-hidden rounded-xl border border-border/40 relative aspect-[16/9] w-full bg-muted">
               <Image
                 src="/hero_dashboard.png"
-                alt="LabExplain Premium Dashboard Overview"
+                alt="WazobiCare Premium Dashboard Overview"
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
                 className="object-cover"
@@ -438,7 +438,7 @@ export default function LandingPage() {
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16 space-y-4">
               <h2 className="text-3xl font-bold tracking-tight">Stories of Impact</h2>
-              <p className="text-lg text-muted-foreground">See how LabExplain helps families across Nigeria take control of their diagnoses.</p>
+              <p className="text-lg text-muted-foreground">See how WazobiCare helps families across Nigeria take control of their diagnoses.</p>
             </div>
 
             <div className="grid gap-8 md:grid-cols-3">
@@ -541,13 +541,13 @@ export default function LandingPage() {
             <div className="w-6 h-6 rounded-lg bg-primary flex items-center justify-center">
               <Activity className="w-3.5 h-3.5 text-white" />
             </div>
-            <span className="font-bold text-foreground">LabExplain Nigeria</span>
+            <span className="font-bold text-foreground">WazobiCare Nigeria</span>
           </div>
           <p className="text-xs text-muted-foreground max-w-lg mx-auto leading-relaxed">
-            Disclaimer: LabExplain leverages Gemini AI models for biometric context extraction. It is an educational tool and does not provide clinical diagnostic reports. Always discuss tests with certified clinical professionals.
+            Disclaimer: WazobiCare leverages Gemini AI models for biometric context extraction. It is an educational tool and does not provide clinical diagnostic reports. Always discuss tests with certified clinical professionals.
           </p>
           <p className="text-xs text-muted-foreground/60">
-            &copy; {new Date().getFullYear()} LabExplain. All rights reserved.
+            &copy; {new Date().getFullYear()} WazobiCare. All rights reserved.
           </p>
         </div>
       </footer>

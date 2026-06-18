@@ -19,8 +19,8 @@ const fraunces = Fraunces({
 
 export const metadata: Metadata = {
   title: {
-    default: "LabExplain — Understand Your Medical Lab Results",
-    template: "%s · LabExplain",
+    default: "WazobiCare — Understand Your Medical Lab Results",
+    template: "%s · WazobiCare",
   },
   description:
     "Upload your medical lab results and get clear, simple explanations in Yoruba, English, Hausa, or Igbo. Powered by AI. Built for clarity.",
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     "multilingual lab reports",
   ],
   openGraph: {
-    title: "LabExplain",
+    title: "WazobiCare",
     description: "Understand your lab results in your language.",
     type: "website",
   },

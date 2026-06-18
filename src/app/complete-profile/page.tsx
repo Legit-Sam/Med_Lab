@@ -3,7 +3,7 @@ import ProfileForm from "./ProfileForm";
 import { getCurrentDbUser } from "@/lib/current-user";
 
 export const metadata = {
-  title: "Complete Profile - LabExplain Nigeria",
+  title: "Complete Profile - WazobiCare Nigeria",
 };
 
 export default async function CompleteProfilePage() {

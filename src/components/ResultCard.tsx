@@ -129,7 +129,7 @@ export default function ResultCard({
         (para.endsWith(":") ||
           /^\d+\./.test(para) ||
           para.toUpperCase() === para ||
-          (para.startsWith("•") === false && para.startsWith("-") === false && i === 0));
+          (para.startsWith("•") === false && para.startsWith("-") === false && para.startsWith("*") === false && i === 0));
 
       if (isHeader) {
         return (
@@ -139,11 +139,11 @@ export default function ResultCard({
         );
       }
 
-      if (para.startsWith("•") || para.startsWith("-")) {
+      if (para.startsWith("•") || para.startsWith("-") || para.startsWith("*")) {
         return (
           <div key={i} className="flex gap-2.5 text-xs text-foreground/80 leading-relaxed pl-2.5 py-0.5">
             <span className="text-primary font-bold shrink-0">▸</span>
-            <span>{para.replace(/^[•\-]\s*/, "")}</span>
+            <span>{para.replace(/^[•\-*]\s*/, "")}</span>
           </div>
         );
       }

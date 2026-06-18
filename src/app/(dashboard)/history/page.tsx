@@ -7,7 +7,7 @@ import { redirect } from "next/navigation";
 import { FileText } from "lucide-react";
 
 export const metadata = {
-  title: "Report History — LabExplain Nigeria",
+  title: "Report History — WazobiCare Nigeria",
 };
 
 export default async function HistoryPage() {

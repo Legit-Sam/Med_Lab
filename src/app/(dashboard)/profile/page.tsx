@@ -16,7 +16,7 @@ import {
 import ProfileEditForm from "@/components/ProfileEditForm";
 
 export const metadata = {
-  title: "User Profile — LabExplain Nigeria",
+  title: "User Profile — WazobiCare Nigeria",
 };
 
 export default async function ProfilePage() {

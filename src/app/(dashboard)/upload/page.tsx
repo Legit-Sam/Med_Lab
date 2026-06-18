@@ -2,7 +2,7 @@ import FileUploader from "@/components/FileUploader";
 import { ShieldCheck, Zap, Globe, Info } from "lucide-react";
 
 export const metadata = {
-  title: "Upload Lab Result — LabExplain Nigeria",
+  title: "Upload Lab Result — WazobiCare Nigeria",
   description: "Upload your medical lab result PDF or image to get a simple explanation.",
 };
 

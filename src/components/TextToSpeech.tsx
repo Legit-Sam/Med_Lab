@@ -61,7 +61,16 @@ export default function TextToSpeech({
 
     window.speechSynthesis.cancel();
 
-    const utterance = new SpeechSynthesisUtterance(text);
+    const cleanText = text
+      .replace(/\*\*/g, "")
+      .replace(/\*/g, "")
+      .replace(/#/g, "")
+      .replace(/^[-\s•▸]+/gm, "")
+      .replace(/\n+/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    const utterance = new SpeechSynthesisUtterance(cleanText);
     const langCode = LANG_CODE_MAP[language] || "en-NG";
 
     const voices = window.speechSynthesis.getVoices();

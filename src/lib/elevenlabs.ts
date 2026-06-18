@@ -37,7 +37,7 @@ export async function generateAndStoreSpeech({
 
   const elevenlabs = new ElevenLabsClient({ apiKey });
   const audio = await elevenlabs.textToSpeech.convert(voiceId, {
-    text: buildSpeechText(language, text),
+    text: buildSpeechText(text),
     modelId: "eleven_v3",
     outputFormat: "mp3_44100_128",
   });
@@ -62,6 +62,13 @@ export async function generateAndStoreSpeech({
   return uploadResult.data.ufsUrl;
 }
 
-function buildSpeechText(language: ElevenLabsLanguage, text: string) {
-  return `Read the following ${languageLabel[language]} clinical lab interpretation clearly and professionally. Preserve the section structure.\n\n${text}`;
+function buildSpeechText(text: string) {
+  return text
+    .replace(/\*\*/g, "")
+    .replace(/\*/g, "")
+    .replace(/#/g, "")
+    .replace(/^[-\s•▸]+/gm, "")
+    .replace(/\n+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }

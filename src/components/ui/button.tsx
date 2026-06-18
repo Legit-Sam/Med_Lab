@@ -78,7 +78,6 @@ function Button({
   fullWidth,
   loading = false,
   disabled,
-  nativeButtonProps,
   children,
   ...props
 }: ButtonProps) {
@@ -87,10 +86,7 @@ function Button({
       data-slot="button"
       className={cn(buttonVariants({ variant, size, fullWidth }), className)}
       disabled={disabled || loading}
-      nativeButtonProps={{
-        ...nativeButtonProps,
-        "aria-busy": loading || undefined,
-      }}
+      aria-busy={loading || undefined}
       {...props}
     >
       {loading && (

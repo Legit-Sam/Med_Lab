@@ -192,7 +192,7 @@ export default function AudioReaderDashboard({
               {paragraphs.map((para, i) => {
                 const isHeader =
                   para.length < 85 &&
-                  (para.endsWith(":") || /^\d+\./.test(para) || (para.startsWith("•") === false && para.startsWith("-") === false && i === 0));
+                  (para.endsWith(":") || /^\d+\./.test(para) || (para.startsWith("•") === false && para.startsWith("-") === false && para.startsWith("*") === false && i === 0));
 
                 if (isHeader && i === 0) {
                   return (
@@ -202,11 +202,11 @@ export default function AudioReaderDashboard({
                   );
                 }
 
-                if (para.startsWith("•") || para.startsWith("-")) {
+                if (para.startsWith("•") || para.startsWith("-") || para.startsWith("*")) {
                   return (
                     <div key={i} className="flex gap-2.5 text-sm leading-relaxed pl-3 py-0.5">
                       <span className="text-primary font-bold shrink-0">▸</span>
-                      <span>{para.replace(/^[•\-]\s*/, "")}</span>
+                      <span>{para.replace(/^[•\-*]\s*/, "")}</span>
                     </div>
                   );
                 }

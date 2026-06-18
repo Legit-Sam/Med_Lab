@@ -8,7 +8,7 @@ import { Settings, CheckCircle2 } from "lucide-react";
 import SettingsForm from "@/components/SettingsForm";
 
 export const metadata = {
-  title: "Settings — LabExplain Nigeria",
+  title: "Settings — WazobiCare Nigeria",
 };
 
 export default async function SettingsPage() {
