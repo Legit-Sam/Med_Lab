@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useTransition, useEffect } from "react";
-import { CheckCircle2, Loader2, Save } from "lucide-react";
+import { toast } from "sonner";
+import { Loader2, Save } from "lucide-react";
 
 type Props = {
   initialLanguage: string;
@@ -10,13 +11,11 @@ type Props = {
 
 export default function SettingsForm({ initialLanguage, onSave }: Props) {
   const [isPending, startTransition] = useTransition();
-  const [success, setSuccess] = useState(false);
-  
+
   const [lang, setLang] = useState(initialLanguage);
   const [autoplay, setAutoplay] = useState(false);
   const [emailAlerts, setEmailAlerts] = useState(true);
 
-  // Load preferences from localStorage on mount
   useEffect(() => {
     const savedAutoplay = localStorage.getItem("setting_autoplay") === "true";
     const savedEmailAlerts = localStorage.getItem("setting_email_alerts") !== "false";
@@ -25,30 +24,20 @@ export default function SettingsForm({ initialLanguage, onSave }: Props) {
   }, []);
 
   const handleSave = () => {
-    setSuccess(false);
     startTransition(async () => {
-      // Save language via Server Action to db
-      await onSave(lang);
-      
-      // Save client preferences locally
-      localStorage.setItem("setting_autoplay", String(autoplay));
-      localStorage.setItem("setting_email_alerts", String(emailAlerts));
-
-      setSuccess(true);
-      setTimeout(() => setSuccess(false), 3000);
+      try {
+        await onSave(lang);
+        localStorage.setItem("setting_autoplay", String(autoplay));
+        localStorage.setItem("setting_email_alerts", String(emailAlerts));
+        toast.success("Settings saved successfully.");
+      } catch {
+        toast.error("Failed to save settings.");
+      }
     });
   };
 
   return (
     <div className="space-y-6">
-      {/* Success Banner */}
-      {success && (
-        <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-teal-500/10 border border-teal-500/20 text-teal-600 dark:text-teal-400 text-xs font-semibold">
-          <CheckCircle2 className="w-4 h-4" />
-          <span>Settings saved successfully.</span>
-        </div>
-      )}
-
       {/* Language Setting */}
       <div className="space-y-2">
         <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
@@ -78,7 +67,6 @@ export default function SettingsForm({ initialLanguage, onSave }: Props) {
           Interface Preferences
         </h4>
 
-        {/* Option 1: Autoplay */}
         <label className="flex items-start gap-3 cursor-pointer group select-none">
           <input
             type="checkbox"
@@ -96,7 +84,6 @@ export default function SettingsForm({ initialLanguage, onSave }: Props) {
           </div>
         </label>
 
-        {/* Option 2: Email Alerts */}
         <label className="flex items-start gap-3 cursor-pointer group select-none">
           <input
             type="checkbox"
@@ -126,7 +113,7 @@ export default function SettingsForm({ initialLanguage, onSave }: Props) {
         ) : (
           <Save className="w-4 h-4" />
         )}
-        <span>{isPending ? "Saving changes..." : "Save Settings"}</span>
+        <span>{isPending ? "Saving..." : "Save Settings"}</span>
       </button>
     </div>
   );

@@ -4,16 +4,15 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Activity, Eye, EyeOff, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 export default function SignUpPage() {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError(null);
 
     const form = new FormData(e.currentTarget);
     const email = form.get("email") as string;
@@ -21,7 +20,7 @@ export default function SignUpPage() {
     const confirmPassword = form.get("confirmPassword") as string;
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match.");
+      toast.error("Passwords do not match.");
       return;
     }
 
@@ -36,14 +35,15 @@ export default function SignUpPage() {
         const data = await res.json();
 
         if (!res.ok) {
-          setError(data.error || "Registration failed.");
+          toast.error(data.error || "Registration failed.");
           return;
         }
 
+        toast.success("Account created! Complete your profile to get started.");
         router.push("/complete-profile");
         router.refresh();
       } catch {
-        setError("Unable to create account. Please try again.");
+        toast.error("Unable to create account. Please try again.");
       }
     });
   };
@@ -82,12 +82,6 @@ export default function SignUpPage() {
 
         <div className="rounded-2xl bg-card border border-border shadow-lg p-6 sm:p-8">
           <form onSubmit={handleSubmit} className="space-y-5">
-            {error && (
-              <div className="rounded-lg bg-destructive/10 border border-destructive/30 px-4 py-3 text-sm text-destructive">
-                {error}
-              </div>
-            )}
-
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-foreground mb-1.5">
                 Email

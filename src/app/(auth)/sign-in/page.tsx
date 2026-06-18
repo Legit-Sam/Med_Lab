@@ -4,16 +4,15 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Activity, Eye, EyeOff, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 export default function SignInPage() {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError(null);
 
     const form = new FormData(e.currentTarget);
     const email = form.get("email") as string;
@@ -30,14 +29,15 @@ export default function SignInPage() {
         const data = await res.json();
 
         if (!res.ok) {
-          setError(data.error || "Login failed.");
+          toast.error(data.error || "Login failed.");
           return;
         }
 
+        toast.success("Signed in successfully.");
         router.push("/dashboard");
         router.refresh();
       } catch {
-        setError("Unable to sign in. Please try again.");
+        toast.error("Unable to sign in. Please try again.");
       }
     });
   };
@@ -76,12 +76,6 @@ export default function SignInPage() {
 
         <div className="rounded-2xl bg-card border border-border shadow-lg p-6 sm:p-8">
           <form onSubmit={handleSubmit} className="space-y-5">
-            {error && (
-              <div className="rounded-lg bg-destructive/10 border border-destructive/30 px-4 py-3 text-sm text-destructive">
-                {error}
-              </div>
-            )}
-
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-foreground mb-1.5">
                 Email

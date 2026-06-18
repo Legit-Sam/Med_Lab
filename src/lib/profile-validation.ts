@@ -1,4 +1,4 @@
-import { GENDER_OPTIONS, isKnownLocation, LANGUAGE_OPTIONS } from "./profile-options";
+import { GENDER_OPTIONS, LANGUAGE_OPTIONS } from "./profile-options";
 
 export type ProfileFormErrors = Partial<
   Record<
@@ -10,8 +10,6 @@ export type ProfileFormErrors = Partial<
     | "lga"
     | "address"
     | "gender"
-    | "emergencyContactName"
-    | "emergencyContactPhone"
     | "preferredLanguage",
     string
   >
@@ -26,8 +24,6 @@ export type ValidProfileInput = {
   lga: string;
   address: string;
   gender: "male" | "female" | "prefer_not_to_say" | null;
-  emergencyContactName: string;
-  emergencyContactPhone: string;
   occupation: string | null;
   preferredLanguage: "english" | "yoruba" | "hausa" | "igbo";
 };
@@ -50,10 +46,8 @@ export function validateProfileForm(formData: FormData):
   const lga = read(formData, "lga");
   const address = read(formData, "address");
   const genderValue = read(formData, "gender");
-  const emergencyContactName = read(formData, "emergencyContactName");
-  const emergencyContactPhone = read(formData, "emergencyContactPhone");
   const occupation = read(formData, "occupation");
-  const preferredLanguage = read(formData, "preferredLanguage") || "yoruba";
+  const preferredLanguage = read(formData, "preferredLanguage") || "english";
 
   const errors: ProfileFormErrors = {};
 
@@ -73,18 +67,9 @@ export function validateProfileForm(formData: FormData):
 
   if (!country) errors.country = "Select your country.";
   if (!state) errors.state = "Select your state.";
-  if (!lga) errors.lga = "Select your local government area.";
-  if (country && state && lga && !isKnownLocation(country, state, lga)) {
-    errors.lga = "Select a valid local government area.";
-  }
+  if (!lga) errors.lga = "Select or enter your local government area.";
 
   if (address.length < 10) errors.address = "Enter an address with at least 10 characters.";
-  if (!emergencyContactName) {
-    errors.emergencyContactName = "Enter an emergency contact name.";
-  }
-  if (!phonePattern.test(emergencyContactPhone)) {
-    errors.emergencyContactPhone = "Enter a valid emergency contact phone number.";
-  }
   if (genderValue && !GENDER_OPTIONS.includes(genderValue as never)) {
     errors.gender = "Select a valid gender option.";
   }
@@ -107,8 +92,6 @@ export function validateProfileForm(formData: FormData):
       lga,
       address,
       gender: genderValue ? (genderValue as ValidProfileInput["gender"]) : null,
-      emergencyContactName,
-      emergencyContactPhone,
       occupation: occupation || null,
       preferredLanguage: preferredLanguage as ValidProfileInput["preferredLanguage"],
     },

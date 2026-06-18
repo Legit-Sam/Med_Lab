@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { LOCATION_OPTIONS } from "@/lib/profile-options";
+import { toast } from "sonner";
 import { CheckCircle2, Loader2, Save } from "lucide-react";
 
 type Props = {
@@ -14,8 +15,6 @@ type Props = {
     state?: string | null;
     lga?: string | null;
     address?: string | null;
-    emergencyContactName?: string | null;
-    emergencyContactPhone?: string | null;
     occupation?: string | null;
     preferredLanguage?: string | null;
   };
@@ -29,9 +28,15 @@ const languages = [
   { value: "igbo", label: "Igbo" },
 ];
 
+function isKnownLga(country: string, state: string, lga: string): boolean {
+  const states = LOCATION_OPTIONS[country as keyof typeof LOCATION_OPTIONS];
+  if (!states) return false;
+  const lgas = states[state as keyof typeof states];
+  return Array.isArray(lgas) && (lgas as readonly string[]).includes(lga);
+}
+
 export default function ProfileEditForm({ user, onSave }: Props) {
   const [isPending, startTransition] = useTransition();
-  const [success, setSuccess] = useState(false);
 
   const countries = Object.keys(LOCATION_OPTIONS);
   const [country, setCountry] = useState(user.country || countries[0] || "");
@@ -54,7 +59,14 @@ export default function ProfileEditForm({ user, onSave }: Props) {
     );
   }, [country, selectedState]);
 
-  const [selectedLga, setSelectedLga] = useState(user.lga || lgas[0] || "");
+  const userLga = user.lga || "";
+  const userLgaIsKnown = userLga ? isKnownLga(country, selectedState, userLga) : false;
+  const [lgaMode, setLgaMode] = useState<"select" | "custom">(
+    userLga && !userLgaIsKnown ? "custom" : "select"
+  );
+  const [selectedLga, setSelectedLga] = useState(
+    userLgaIsKnown ? userLga : lgas[0] || ""
+  );
 
   function onCountryChange(value: string) {
     const nextStates = Object.keys(
@@ -63,10 +75,10 @@ export default function ProfileEditForm({ user, onSave }: Props) {
     setCountry(value);
     const firstState = nextStates[0] || "";
     setSelectedState(firstState);
-
     const countryOptions = LOCATION_OPTIONS[value as keyof typeof LOCATION_OPTIONS];
     const nextLgas = (countryOptions?.[firstState as keyof typeof countryOptions] as readonly string[]) || [];
     setSelectedLga(nextLgas[0] || "");
+    setLgaMode("select");
   }
 
   function onStateChange(value: string) {
@@ -74,16 +86,22 @@ export default function ProfileEditForm({ user, onSave }: Props) {
     const countryOptions = LOCATION_OPTIONS[country as keyof typeof LOCATION_OPTIONS];
     const nextLgas = (countryOptions?.[value as keyof typeof countryOptions] as readonly string[]) || [];
     setSelectedLga(nextLgas[0] || "");
+    setLgaMode("select");
   }
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setSuccess(false);
     const formData = new FormData(event.currentTarget);
+    if (lgaMode === "custom") {
+      formData.set("lga", selectedLga);
+    }
     startTransition(async () => {
-      await onSave(formData);
-      setSuccess(true);
-      setTimeout(() => setSuccess(false), 3000);
+      try {
+        await onSave(formData);
+        toast.success("Profile updated successfully.");
+      } catch {
+        toast.error("Failed to save profile. Please try again.");
+      }
     });
   };
 
@@ -91,12 +109,6 @@ export default function ProfileEditForm({ user, onSave }: Props) {
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="flex items-center justify-between border-b border-border/60 pb-3 mb-4">
         <h3 className="text-sm font-bold text-foreground">Edit Profile Information</h3>
-        {success && (
-          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-teal-600 dark:text-teal-400">
-            <CheckCircle2 className="w-3.5 h-3.5" />
-            Changes saved
-          </span>
-        )}
       </div>
 
       <section className="grid gap-4 sm:grid-cols-2">
@@ -196,18 +208,57 @@ export default function ProfileEditForm({ user, onSave }: Props) {
           <span className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
             Local Government (LGA)
           </span>
-          <select
-            name="lga"
-            value={selectedLga}
-            onChange={(e) => setSelectedLga(e.target.value)}
-            className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-xs text-foreground outline-none focus:border-primary/50 transition"
-          >
-            {lgas.map((l) => (
-              <option key={l} value={l}>
-                {l}
-              </option>
-            ))}
-          </select>
+          {lgaMode === "select" ? (
+            <div>
+              <select
+                name="lga"
+                value={selectedLga}
+                onChange={(e) => {
+                  if (e.target.value === "__custom__") {
+                    setLgaMode("custom");
+                    setSelectedLga("");
+                  } else {
+                    setSelectedLga(e.target.value);
+                  }
+                }}
+                className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-xs text-foreground outline-none focus:border-primary/50 transition"
+              >
+                {lgas.map((l) => (
+                  <option key={l} value={l}>
+                    {l}
+                  </option>
+                ))}
+                <option value="__custom__">Other (type manually)</option>
+              </select>
+            </div>
+          ) : (
+            <div>
+              <input
+                name="lga"
+                type="text"
+                value={selectedLga}
+                onChange={(e) => setSelectedLga(e.target.value)}
+                placeholder="Type your LGA"
+                className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-xs text-foreground placeholder:text-muted-foreground outline-none focus:border-primary/50 transition"
+              />
+            </div>
+          )}
+          {lgas.length > 0 && (
+            <button
+              type="button"
+              onClick={() => {
+                setLgaMode(lgaMode === "select" ? "custom" : "select");
+                if (lgaMode === "custom") {
+                  setSelectedLga(lgas[0] || "");
+                } else {
+                  setSelectedLga("");
+                }
+              }}
+              className="mt-1 text-[10px] text-accent hover:underline"
+            >
+              {lgaMode === "select" ? "Can't find your LGA? Type it manually" : "Pick from list"}
+            </button>
+          )}
         </label>
       </section>
 
@@ -225,32 +276,6 @@ export default function ProfileEditForm({ user, onSave }: Props) {
       </label>
 
       <section className="grid gap-4 sm:grid-cols-2">
-        <label className="block space-y-1.5">
-          <span className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
-            Emergency Contact Name
-          </span>
-          <input
-            name="emergencyContactName"
-            type="text"
-            required
-            defaultValue={user.emergencyContactName || ""}
-            className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-xs text-foreground placeholder:text-muted-foreground outline-none focus:border-primary/50 transition"
-          />
-        </label>
-
-        <label className="block space-y-1.5">
-          <span className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
-            Emergency Contact Phone
-          </span>
-          <input
-            name="emergencyContactPhone"
-            type="tel"
-            required
-            defaultValue={user.emergencyContactPhone || ""}
-            className="w-full rounded-xl border border-border bg-background px-3 py-2.5 text-xs text-foreground placeholder:text-muted-foreground outline-none focus:border-primary/50 transition"
-          />
-        </label>
-
         <label className="block space-y-1.5">
           <span className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
             Occupation
@@ -291,7 +316,7 @@ export default function ProfileEditForm({ user, onSave }: Props) {
         ) : (
           <Save className="w-4 h-4" />
         )}
-        <span>{isPending ? "Saving changes..." : "Save Profile Details"}</span>
+        <span>{isPending ? "Saving..." : "Save Profile Details"}</span>
       </button>
     </form>
   );

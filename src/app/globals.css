@@ -507,6 +507,17 @@
   }
 }
 
+/* UploadThing overrides — ensure visibility in dark mode */
+[data-ut-element="button"][data-state="ready"],
+[data-ut-element="label"] {
+  color: var(--primary-foreground) !important;
+  background-color: var(--primary) !important;
+}
+[data-ut-element="button"] {
+  color: var(--primary-foreground) !important;
+  background-color: var(--primary) !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

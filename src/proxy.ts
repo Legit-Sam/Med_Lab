@@ -13,7 +13,7 @@ const protectedRoutes = [
 
 const authRoutes = ["/sign-in", "/sign-up", "/api/auth/login", "/api/auth/register"];
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const token = req.cookies.get("session_token")?.value;
   const isAuthenticated = !!token;

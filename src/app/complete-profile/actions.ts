@@ -45,8 +45,6 @@ export async function completeProfile(
       lga: result.data.lga,
       address: result.data.address,
       gender: result.data.gender,
-      emergencyContactName: result.data.emergencyContactName,
-      emergencyContactPhone: result.data.emergencyContactPhone,
       occupation: result.data.occupation,
       preferredLanguage: result.data.preferredLanguage,
       profileCompleted: true,

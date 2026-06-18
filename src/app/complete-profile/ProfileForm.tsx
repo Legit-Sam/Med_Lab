@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState, useActionState } from "react";
+import { useEffect, useMemo, useState, useActionState } from "react";
+import { toast } from "sonner";
 import { CheckCircle2 } from "lucide-react";
 import { completeProfile, CompleteProfileState } from "./actions";
 import { LOCATION_OPTIONS } from "@/lib/profile-options";
@@ -15,6 +16,7 @@ const languages = [
 ];
 
 export default function ProfileForm() {
+  const router = useRouter();
   const [state, action, pending] = useActionState(completeProfile, initialState);
   const countries = Object.keys(LOCATION_OPTIONS);
   const [country, setCountry] = useState(countries[0] ?? "");
@@ -23,6 +25,7 @@ export default function ProfileForm() {
     [country]
   );
   const [selectedState, setSelectedState] = useState(states[0] ?? "");
+  const [lgaMode, setLgaMode] = useState<"select" | "custom">("select");
   const lgas = useMemo(() => {
     const countryOptions = LOCATION_OPTIONS[country as keyof typeof LOCATION_OPTIONS];
     return (
@@ -38,7 +41,19 @@ export default function ProfileForm() {
     );
     setCountry(value);
     setSelectedState(nextStates[0] ?? "");
+    setLgaMode("select");
   }
+
+  function onStateChange(value: string) {
+    setSelectedState(value);
+    setLgaMode("select");
+  }
+
+  useEffect(() => {
+    if (state.message) {
+      toast.error(state.message);
+    }
+  }, [state.message]);
 
   return (
     <form action={action} className="space-y-6">
@@ -46,12 +61,6 @@ export default function ProfileForm() {
         <span className="text-sm font-medium text-accent">Step 1 of 1</span>
         <CheckCircle2 className="h-5 w-5 text-accent" aria-hidden="true" />
       </div>
-
-      {state.message ? (
-        <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-          {state.message}
-        </p>
-      ) : null}
 
       <section className="grid gap-4 sm:grid-cols-2">
         <Field
@@ -99,7 +108,7 @@ export default function ProfileForm() {
           label="State"
           name="state"
           value={selectedState}
-          onChange={(event) => setSelectedState(event.target.value)}
+          onChange={(event) => onStateChange(event.target.value)}
           error={state.errors?.state}
         >
           {states.map((item) => (
@@ -108,13 +117,46 @@ export default function ProfileForm() {
             </option>
           ))}
         </Select>
-        <Select label="Local government area" name="lga" error={state.errors?.lga}>
-          {lgas.map((item) => (
-            <option key={item} value={item}>
-              {item}
-            </option>
-          ))}
-        </Select>
+
+        <div>
+          {lgaMode === "select" ? (
+            <Select
+              label="Local government area"
+              name="lga"
+              value=""
+              onChange={(e) => {
+                if (e.target.value === "__custom__") {
+                  setLgaMode("custom");
+                }
+              }}
+              error={state.errors?.lga}
+            >
+              <option value="" disabled>Select LGA</option>
+              {lgas.map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
+              <option value="__custom__">Other (type manually)</option>
+            </Select>
+          ) : (
+            <Field
+              label="Local government area"
+              name="lga"
+              error={state.errors?.lga}
+              placeholder="Type your LGA"
+            />
+          )}
+          {lgaMode === "custom" && lgas.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setLgaMode("select")}
+              className="mt-1 text-xs text-accent hover:underline"
+            >
+              Pick from list instead
+            </button>
+          )}
+        </div>
       </section>
 
       <label className="block">
@@ -130,17 +172,6 @@ export default function ProfileForm() {
       </label>
 
       <section className="grid gap-4 sm:grid-cols-2">
-        <Field
-          label="Emergency contact name"
-          name="emergencyContactName"
-          error={state.errors?.emergencyContactName}
-        />
-        <Field
-          label="Emergency contact phone"
-          name="emergencyContactPhone"
-          type="tel"
-          error={state.errors?.emergencyContactPhone}
-        />
         <Field label="Occupation" name="occupation" />
         <Select
           label="Preferred language"
@@ -168,12 +199,14 @@ function Field({
   name,
   type = "text",
   autoComplete,
+  placeholder,
   error,
 }: {
   label: string;
   name: string;
   type?: string;
   autoComplete?: string;
+  placeholder?: string;
   error?: string;
 }) {
   return (
@@ -183,6 +216,7 @@ function Field({
         name={name}
         type={type}
         autoComplete={autoComplete}
+        placeholder={placeholder}
         className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm text-foreground outline-none transition focus:border-accent"
       />
       <ErrorMessage error={error} />

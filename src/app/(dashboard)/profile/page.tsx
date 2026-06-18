@@ -38,8 +38,6 @@ export default async function ProfilePage() {
     const state = formData.get("state") as string;
     const lga = formData.get("lga") as string;
     const address = formData.get("address") as string;
-    const emergencyContactName = formData.get("emergencyContactName") as string;
-    const emergencyContactPhone = formData.get("emergencyContactPhone") as string;
     const occupation = formData.get("occupation") as string;
     const preferredLanguage = formData.get("preferredLanguage") as any;
 
@@ -55,8 +53,6 @@ export default async function ProfilePage() {
         state,
         lga,
         address,
-        emergencyContactName,
-        emergencyContactPhone,
         occupation,
         preferredLanguage: preferredLanguage || "english",
       })

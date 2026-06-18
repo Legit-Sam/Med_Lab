@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { UploadDropzone } from "@uploadthing/react";
 import type { OurFileRouter } from "@/app/api/uploadthing/core";
 import { FileText, ImageIcon, AlertCircle, CheckCircle2 } from "lucide-react";
+import { toast } from "sonner";
 import Spinner from "./ui/Spinner";
 
 type UploadState =
@@ -71,10 +72,11 @@ export default function FileUploader() {
           router.push(`/report/${reportId}`);
         }, 1200);
       } catch (err) {
+        const message = err instanceof Error ? err.message : "Failed to analyze file";
+        toast.error(message);
         setState({
           type: "error",
-          message:
-            err instanceof Error ? err.message : "Failed to analyze file",
+          message,
         });
       }
     },
@@ -155,9 +157,10 @@ export default function FileUploader() {
             );
           }
         }}
-        onUploadError={(error) =>
-          setState({ type: "error", message: error.message })
-        }
+        onUploadError={(error) => {
+          toast.error(error.message);
+          setState({ type: "error", message: error.message });
+        }}
         appearance={{
           container:
             "border-2 border-dashed border-border hover:border-primary/50 rounded-2xl bg-muted/25 transition-all duration-300 cursor-pointer min-h-[260px] p-6 flex flex-col justify-center items-center gap-1",
@@ -165,7 +168,7 @@ export default function FileUploader() {
           label: "text-foreground font-bold text-sm",
           allowedContent: "text-muted-foreground text-xs",
           button:
-            "btn-primary mt-4 ut-readying:opacity-70 ut-uploading:opacity-70",
+            "!bg-primary !text-primary-foreground font-semibold text-sm rounded-xl px-5 py-2.5 mt-4 hover:opacity-90 transition-all ut-readying:opacity-70 ut-uploading:opacity-70",
         }}
         content={{
           label: "Drop your lab result here or click to browse",

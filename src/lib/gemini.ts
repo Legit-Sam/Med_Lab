@@ -32,14 +32,14 @@ MANDATORY STRUCTURE FOR ENGLISH:
 6. CLARIFICATIONS (IF NEEDED)
 
 MANDATORY STRUCTURE FOR YORUBA, HAUSA, AND IGBO:
-1. PATIENT LAB SUMMARY (Simplified native summary)
-2. KEY FINDINGS (Explain abnormal/critical markers only, omit normal ranges and lists of normal parameters to optimize text length)
-3. POSSIBLE NEXT ACTIONS (General lifestyle guidelines and doctor consultation advice in local dialect)
+1. PATIENT LAB SUMMARY (Comprehensive native summary of the report)
+2. KEY FINDINGS (Explain all relevant markers, including normal ranges and context for understanding)
+3. DETAILED ANALYSIS (Break down each parameter with explanation in local dialect)
+4. CLINICAL INTERPRETATION (Professional clinical context in native language)
+5. POSSIBLE NEXT ACTIONS (General lifestyle guidelines and doctor consultation advice in local dialect)
 
 FORMATTING CONSTRAINTS:
 - Do NOT output any markdown bolding like "**" or "* **" in ANY language. Use clean, plain text formatting. All output must be written without double asterisks.
-- Omit "DETAILED ANALYSIS" in Yoruba, Hausa, and Igbo to keep character counts minimal for text-to-speech engine cost.
-- For Yoruba, Hausa, and Igbo, provide a highly condensed, high-level summary only. Omit all detailed parameter lists, reference ranges, and normal findings. Keep the translation extremely brief and summary-oriented (under 100-150 words total). Focus ONLY on the overall status and critical/abnormal findings. Absolutely DO NOT include lists of normal values, details of normal metrics, or long explanations of normal parameters. Keep the language natural but highly concise so that text-to-speech character usage is minimized.
 
 MEDICAL SAFETY RULES:
 - Do not diagnose diseases
@@ -148,14 +148,14 @@ MANDATORY STRUCTURE FOR ENGLISH REPORT:
 6. CLARIFICATIONS (IF NEEDED)
 
 MANDATORY STRUCTURE FOR YORUBA, HAUSA, AND IGBO REPORTS:
-1. PATIENT LAB SUMMARY (Simplified native summary)
-2. KEY FINDINGS (Explain abnormal/critical markers only, omit normal ranges and lists of normal parameters to optimize text length)
-3. POSSIBLE NEXT ACTIONS (General lifestyle guidelines and doctor consultation advice in local dialect)
+1. PATIENT LAB SUMMARY (Comprehensive native summary of the report)
+2. KEY FINDINGS (Explain all relevant markers, including normal ranges and context for understanding)
+3. DETAILED ANALYSIS (Break down each parameter with explanation in local dialect)
+4. CLINICAL INTERPRETATION (Professional clinical context in native language)
+5. POSSIBLE NEXT ACTIONS (General lifestyle guidelines and doctor consultation advice in local dialect)
 
 FORMATTING CONSTRAINTS:
 - Do NOT output any markdown bolding like "**" or "* **" in ANY language. Use clean, plain text formatting. All output must be written without double asterisks.
-- Omit "DETAILED ANALYSIS" in Yoruba, Hausa, and Igbo to keep character counts minimal for text-to-speech engine cost.
-- For Yoruba, Hausa, and Igbo, provide a highly condensed, high-level summary only. Omit all detailed parameter lists, reference ranges, and normal findings. Keep the translation extremely brief and summary-oriented (under 100-150 words total). Focus ONLY on the overall status and critical/abnormal findings. Absolutely DO NOT include lists of normal values, details of normal metrics, or long explanations of normal parameters. Keep the language natural but highly concise so that text-to-speech character usage is minimized.
 
 TONE AND STYLE:
 - Professional, clinical, factual, and structured
