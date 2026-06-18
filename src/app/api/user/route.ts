@@ -31,7 +31,7 @@ export async function PUT(req: NextRequest) {
     const [updatedUser] = await db
       .update(users)
       .set({ preferredLanguage })
-      .where(eq(users.clerkId, user.clerkId))
+      .where(eq(users.id, user.id))
       .returning();
 
     return NextResponse.json({ user: updatedUser }, { status: 200 });

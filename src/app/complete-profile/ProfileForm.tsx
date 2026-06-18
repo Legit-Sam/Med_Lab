@@ -42,13 +42,13 @@ export default function ProfileForm() {
 
   return (
     <form action={action} className="space-y-6">
-      <div className="flex items-center justify-between gap-4 rounded-lg border border-green-500/20 bg-green-500/10 px-4 py-3">
-        <span className="text-sm font-medium text-green-300">Step 1 of 1</span>
-        <CheckCircle2 className="h-5 w-5 text-green-300" aria-hidden="true" />
+      <div className="flex items-center justify-between gap-4 rounded-lg border border-accent/20 bg-accent/5 px-4 py-3">
+        <span className="text-sm font-medium text-accent">Step 1 of 1</span>
+        <CheckCircle2 className="h-5 w-5 text-accent" aria-hidden="true" />
       </div>
 
       {state.message ? (
-        <p className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+        <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
           {state.message}
         </p>
       ) : null}
@@ -118,13 +118,13 @@ export default function ProfileForm() {
       </section>
 
       <label className="block">
-        <span className="mb-1.5 block text-sm font-medium text-slate-200">
+        <span className="mb-1.5 block text-sm font-medium text-foreground">
           Full address
         </span>
         <input
           name="address"
           autoComplete="street-address"
-          className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2.5 text-sm text-white outline-none transition focus:border-green-500"
+          className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm text-foreground outline-none transition focus:border-accent"
         />
         <ErrorMessage error={state.errors?.address} />
       </label>
@@ -178,12 +178,12 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="mb-1.5 block text-sm font-medium text-slate-200">{label}</span>
+      <span className="mb-1.5 block text-sm font-medium text-foreground">{label}</span>
       <input
         name={name}
         type={type}
         autoComplete={autoComplete}
-        className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2.5 text-sm text-white outline-none transition focus:border-green-500"
+        className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm text-foreground outline-none transition focus:border-accent"
       />
       <ErrorMessage error={error} />
     </label>
@@ -203,10 +203,10 @@ function Select({
 }) {
   return (
     <label className="block">
-      <span className="mb-1.5 block text-sm font-medium text-slate-200">{label}</span>
+      <span className="mb-1.5 block text-sm font-medium text-foreground">{label}</span>
       <select
         name={name}
-        className="w-full rounded-lg border border-slate-700 bg-slate-900/70 px-3 py-2.5 text-sm text-white outline-none transition focus:border-green-500"
+        className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm text-foreground outline-none transition focus:border-accent"
         {...props}
       >
         {children}
@@ -217,5 +217,5 @@ function Select({
 }
 
 function ErrorMessage({ error }: { error?: string }) {
-  return error ? <span className="mt-1 block text-xs text-red-300">{error}</span> : null;
+  return error ? <span className="mt-1 block text-xs text-destructive">{error}</span> : null;
 }

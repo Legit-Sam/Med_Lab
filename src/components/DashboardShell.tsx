@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { UserButton } from "@clerk/nextjs";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Upload,
@@ -15,6 +14,8 @@ import {
   X,
   Activity,
   Info,
+  LogOut,
+  ChevronDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -51,6 +52,55 @@ const NAV_GROUPS: NavGroup[] = [
   },
 ];
 
+function UserMenu({ user }: { user: { fullName?: string | null; email: string } }) {
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const displayName = user.fullName || user.email.split("@")[0];
+
+  const handleLogout = async () => {
+    await fetch("/api/auth/logout", { method: "POST" });
+    router.push("/");
+    router.refresh();
+  };
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full flex items-center gap-3 p-3.5 rounded-xl border border-border bg-background/50 hover:bg-muted/60 transition-colors"
+      >
+        <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-xs font-bold shrink-0">
+          {displayName.charAt(0).toUpperCase()}
+        </div>
+        <div className="min-w-0 flex-1 text-left">
+          <p className="text-sm font-semibold truncate text-foreground leading-tight">
+            {displayName}
+          </p>
+          <p className="text-xs text-muted-foreground truncate mt-0.5">
+            {user.email}
+          </p>
+        </div>
+        <ChevronDown className={cn("w-4 h-4 text-muted-foreground transition-transform", open && "rotate-180")} />
+      </button>
+
+      {open && (
+        <>
+          <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
+          <div className="absolute bottom-full left-0 right-0 mb-2 z-20 bg-card border border-border rounded-xl shadow-lg p-1.5">
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-muted-foreground hover:text-destructive hover:bg-destructive/5 transition-colors"
+            >
+              <LogOut className="w-4 h-4" />
+              <span>Sign out</span>
+            </button>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 function SidebarContent({
   pathname,
   onNavigate,
@@ -60,8 +110,6 @@ function SidebarContent({
   onNavigate?: () => void;
   user: { fullName?: string | null; email: string };
 }) {
-  const displayName = user.fullName || user.email.split("@")[0];
-
   return (
     <div className="flex flex-col h-full">
       {/* Brand */}
@@ -82,24 +130,9 @@ function SidebarContent({
         </div>
       </div>
 
-      {/* User card */}
-      <div className="mx-4 mt-5 mb-2 p-3.5 rounded-xl border border-border bg-background/50 flex items-center gap-3">
-        <UserButton
-          appearance={{
-            elements: {
-              avatarBox:
-                "w-9 h-9 border-2 border-border",
-            },
-          }}
-        />
-        <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold truncate text-foreground leading-tight">
-            {displayName}
-          </p>
-          <p className="text-xs text-muted-foreground truncate mt-0.5">
-            {user.email}
-          </p>
-        </div>
+      {/* User card with menu */}
+      <div className="mx-4 mt-5 mb-2">
+        <UserMenu user={user} />
       </div>
 
       {/* Navigation */}
@@ -125,7 +158,6 @@ function SidebarContent({
                         : "text-muted-foreground hover:text-foreground hover:bg-muted/60",
                     )}
                   >
-                    {/* Active indicator bar */}
                     {isActive && (
                       <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-full bg-accent" />
                     )}
@@ -169,12 +201,10 @@ export default function DashboardShell({ children, user }: DashboardShellProps) 
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col md:flex-row">
-      {/* ─── Desktop Sidebar ─── */}
       <aside className="hidden md:flex flex-col w-64 border-r border-border bg-card/80 backdrop-blur-md sticky top-0 h-screen shrink-0 z-30">
         <SidebarContent pathname={pathname} user={user} />
       </aside>
 
-      {/* ─── Mobile Header ─── */}
       <header className="md:hidden sticky top-0 z-40 h-14 border-b border-border bg-card/80 backdrop-blur-xl flex items-center justify-between px-4">
         <Link href="/dashboard" className="flex items-center gap-2.5">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
@@ -189,11 +219,16 @@ export default function DashboardShell({ children, user }: DashboardShellProps) 
         </Link>
 
         <div className="flex items-center gap-2">
-          <UserButton
-            appearance={{
-              elements: { avatarBox: "w-8 h-8 border-2 border-border" },
+          <button
+            onClick={async () => {
+              await fetch("/api/auth/logout", { method: "POST" });
+              window.location.href = "/";
             }}
-          />
+            className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            aria-label="Sign out"
+          >
+            <LogOut className="w-5 h-5" />
+          </button>
           <button
             onClick={() => setMobileOpen(true)}
             className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
@@ -204,16 +239,13 @@ export default function DashboardShell({ children, user }: DashboardShellProps) 
         </div>
       </header>
 
-      {/* ─── Mobile Drawer ─── */}
       {mobileOpen && (
         <>
-          {/* Scrim */}
           <div
             className="md:hidden fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
             onClick={() => setMobileOpen(false)}
             aria-hidden
           />
-          {/* Drawer panel */}
           <div className="md:hidden fixed inset-y-0 left-0 z-50 w-72 bg-card border-r border-border shadow-2xl slide-in-left">
             <SidebarContent
               pathname={pathname}
@@ -224,7 +256,6 @@ export default function DashboardShell({ children, user }: DashboardShellProps) 
         </>
       )}
 
-      {/* ─── Main Content ─── */}
       <div className="flex-1 flex flex-col min-w-0">
         <main className="flex-1 p-5 md:p-8 lg:p-10 max-w-6xl mx-auto w-full">
           {children}

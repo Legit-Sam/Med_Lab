@@ -31,7 +31,6 @@ export type Report = {
 
 export type User = {
   id: string;
-  clerkId: string;
   email: string;
   name: string | null;
   fullName: string | null;

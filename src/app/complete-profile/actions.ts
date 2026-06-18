@@ -51,7 +51,7 @@ export async function completeProfile(
       preferredLanguage: result.data.preferredLanguage,
       profileCompleted: true,
     })
-    .where(eq(users.clerkId, user.clerkId));
+    .where(eq(users.id, user.id));
 
   redirect("/dashboard");
 }

@@ -1,6 +1,7 @@
 import {
   boolean,
   date,
+  integer,
   pgEnum,
   pgTable,
   text,
@@ -21,6 +22,13 @@ export const reportStatusEnum = pgEnum("report_status", [
   "failed",
 ]);
 
+export const jobStatusEnum = pgEnum("job_status", [
+  "queued",
+  "processing",
+  "completed",
+  "failed",
+]);
+
 export const genderEnum = pgEnum("gender", [
   "male",
   "female",
@@ -29,8 +37,8 @@ export const genderEnum = pgEnum("gender", [
 
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
-  clerkId: text("clerk_id").notNull().unique(),
-  email: text("email").notNull(),
+  email: text("email").notNull().unique(),
+  passwordHash: text("password_hash").notNull(),
   name: text("name"),
   fullName: text("full_name"),
   phoneNumber: text("phone_number"),
@@ -45,6 +53,17 @@ export const users = pgTable("users", {
   occupation: text("occupation"),
   preferredLanguage: languageEnum("preferred_language").default("english").notNull(),
   profileCompleted: boolean("profile_completed").default(false).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const sessions = pgTable("sessions", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  token: text("token").notNull().unique(),
+  expiresAt: timestamp("expires_at").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -69,7 +88,25 @@ export const reports = pgTable("reports", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const analysisJobs = pgTable("analysis_jobs", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  reportId: uuid("report_id")
+    .notNull()
+    .references(() => reports.id, { onDelete: "cascade" }),
+  status: jobStatusEnum("status").default("queued").notNull(),
+  startedAt: timestamp("started_at"),
+  completedAt: timestamp("completed_at"),
+  failedAt: timestamp("failed_at"),
+  errorMessage: text("error_message"),
+  retryCount: integer("retry_count").default(0).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export type InsertUser = typeof users.$inferInsert;
 export type SelectUser = typeof users.$inferSelect;
 export type InsertReport = typeof reports.$inferInsert;
 export type SelectReport = typeof reports.$inferSelect;
+export type InsertSession = typeof sessions.$inferInsert;
+export type SelectSession = typeof sessions.$inferSelect;
+export type InsertAnalysisJob = typeof analysisJobs.$inferInsert;
+export type SelectAnalysisJob = typeof analysisJobs.$inferSelect;

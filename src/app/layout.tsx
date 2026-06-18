@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { ClerkProvider } from "@clerk/nextjs";
 import { Inter, Fraunces } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -44,34 +43,31 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ClerkProvider>
-      <html
-        lang="en"
-        data-scroll-behavior="smooth"
-        suppressHydrationWarning
-        className={`${inter.variable} ${fraunces.variable}`}
-      >
-        <head>
-          {/* No-flash theme bootstrap — runs before paint to avoid FOUC */}
-          <script
-            suppressHydrationWarning
-            dangerouslySetInnerHTML={{
-              __html: `
-                try {
-                  const savedTheme = localStorage.getItem('theme');
-                  const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-                  const theme = savedTheme || systemTheme;
-                  document.documentElement.classList.toggle('dark', theme === 'dark');
-                  document.documentElement.style.colorScheme = theme;
-                } catch (_) {}
-              `,
-            }}
-          />
-        </head>
-        <body className="font-sans antialiased bg-background text-foreground min-h-screen">
-          <ThemeProvider>{children}</ThemeProvider>
-        </body>
-      </html>
-    </ClerkProvider>
+    <html
+      lang="en"
+      data-scroll-behavior="smooth"
+      suppressHydrationWarning
+      className={`${inter.variable} ${fraunces.variable}`}
+    >
+      <head>
+        <script
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                const savedTheme = localStorage.getItem('theme');
+                const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                const theme = savedTheme || systemTheme;
+                document.documentElement.classList.toggle('dark', theme === 'dark');
+                document.documentElement.style.colorScheme = theme;
+              } catch (_) {}
+            `,
+          }}
+        />
+      </head>
+      <body className="font-sans antialiased bg-background text-foreground min-h-screen">
+        <ThemeProvider>{children}</ThemeProvider>
+      </body>
+    </html>
   );
 }

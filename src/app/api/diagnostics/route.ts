@@ -7,8 +7,6 @@ export const dynamic = "force-dynamic";
 
 const envChecks = [
   "DATABASE_URL",
-  "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
-  "CLERK_SECRET_KEY",
   "GEMINI_API_KEY",
   "UPLOADTHING_TOKEN",
   "ELEVENLABS_API_KEY",

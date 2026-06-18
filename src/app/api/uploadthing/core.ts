@@ -14,7 +14,7 @@ export const ourFileRouter = {
       if (!user.profileCompleted) {
         throw new Error("Complete your profile before uploading reports.");
       }
-      return { userId: user.clerkId };
+      return { userId: user.id };
     })
     .onUploadComplete(async ({ metadata, file }) => {
       return { uploadedBy: metadata.userId, fileUrl: file.ufsUrl };

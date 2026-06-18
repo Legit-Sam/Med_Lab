@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { useUser } from "@clerk/nextjs";
+import { useEffect, useState } from "react";
 import {
   Activity,
   Upload,
@@ -115,7 +115,17 @@ const TESTIMONIALS = [
 ];
 
 export default function LandingPage() {
-  const { isSignedIn, isLoaded } = useUser();
+  const [isSignedIn, setIsSignedIn] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then((res) => {
+        if (res.ok) setIsSignedIn(true);
+      })
+      .catch(() => {})
+      .finally(() => setIsLoaded(true));
+  }, []);
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
