@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Hausa TTS Test</title>
+</head>
+
+<body>
+
+<h2>Hausa Voice Test</h2>
+
+<button onclick="play()">▶ Play Hausa</button>
+<button onclick="stop()">⏹ Stop</button>
+
+<script>
+
+const text = `
+PATIENT LAB SUMMARY
+
+Takaitaccen Rahoton Binciken Daki na Mai Haƙuri.
+
+Wannan rahoto ya tattara sakamakon binciken daki
+na mai haƙuri a kwanakin uku.
+
+Disamba 10, 2006.
+
+Disamba 8, 2006.
+
+Disamba 5, 2006.
+
+Mahimman wuraren da aka duba sun haɗa da:
+ruwa,
+electrolytes,
+aikin koda,
+aikin hanta,
+da yanayin abinci mai gina jiki.
+
+Mahimman abubuwan da aka gano.
+
+Disamba 10:
+Babban Creatinine.
+
+Disamba 8:
+Babban Calcium Ionized.
+
+Disamba 5:
+Dan ƙaramin Sodium.
+Babban Chloride.
+Ƙaramin Calcium.
+Babban BUN.
+Ƙaramin Albumin sosai.
+`;
+
+let currentUtterance = null;
+
+function splitText(input, size = 250) {
+  const chunks = [];
+
+  for (let i = 0; i < input.length; i += size) {
+    chunks.push(input.slice(i, i + size));
+  }
+
+  return chunks;
+}
+
+async function play() {
+  stop();
+
+  const voices = speechSynthesis.getVoices();
+
+  console.table(
+    voices.map(v => ({
+      name: v.name,
+      lang: v.lang
+    }))
+  );
+
+  const hausaVoice =
+    voices.find(v => v.lang === "ha-NG") ||
+    voices.find(v => v.lang.startsWith("ha")) ||
+    voices.find(v => v.lang.includes("en"));
+
+  const chunks = splitText(text);
+
+  speakChunks(chunks, hausaVoice);
+}
+
+function speakChunks(chunks, voice) {
+  if (!chunks.length) return;
+
+  currentUtterance =
+    new SpeechSynthesisUtterance(
+      chunks.shift()
+    );
+
+  // Hausa language
+  currentUtterance.lang = "ha-NG";
+
+  currentUtterance.rate = 0.85;
+  currentUtterance.pitch = 1;
+  currentUtterance.volume = 1;
+
+  if (voice) {
+    currentUtterance.voice = voice;
+    console.log("Using voice:", voice.name);
+  }
+
+  currentUtterance.onend = () => {
+    speakChunks(chunks, voice);
+  };
+
+  speechSynthesis.speak(
+    currentUtterance
+  );
+}
+
+function stop() {
+  speechSynthesis.cancel();
+}
+
+speechSynthesis.onvoiceschanged = () => {
+  console.log(
+    "Loaded voices:",
+    speechSynthesis.getVoices()
+  );
+};
+
+</script>
+
+</body>
+</html>
