@@ -16,7 +16,6 @@ const languages = [
 ];
 
 export default function ProfileForm() {
-  const router = useRouter();
   const [state, action, pending] = useActionState(completeProfile, initialState);
   const countries = Object.keys(LOCATION_OPTIONS);
   const [country, setCountry] = useState(countries[0] ?? "");
