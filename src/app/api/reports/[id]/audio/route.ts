@@ -4,25 +4,16 @@ import { db } from "@/db";
 import { reports } from "@/db/schema";
 import { getCurrentDbUser } from "@/lib/current-user";
 import {
-  ElevenLabsLanguage,
+  MmsLanguage,
   generateAndStoreSpeech,
-} from "@/lib/elevenlabs";
+} from "@/lib/mms-tts";
 import { createRequestId, getErrorMessage } from "@/lib/api-errors";
 
-const languageConfig = {
-  yoruba: {
-    textColumn: "yorubaResult",
-    audioColumn: "yorubaAudioUrl",
-  },
-  hausa: {
-    textColumn: "hausaResult",
-    audioColumn: "hausaAudioUrl",
-  },
-  igbo: {
-    textColumn: "igboResult",
-    audioColumn: "igboAudioUrl",
-  },
-} as const;
+const languageConfig: Record<string, { textColumn: string; audioColumn: string }> = {
+  yoruba: { textColumn: "yorubaResult", audioColumn: "yorubaAudioUrl" },
+  hausa: { textColumn: "hausaResult", audioColumn: "hausaAudioUrl" },
+  igbo: { textColumn: "igboResult", audioColumn: "igboAudioUrl" },
+};
 
 export async function POST(
   req: NextRequest,
@@ -44,12 +35,19 @@ export async function POST(
 
     const { id } = await params;
     const body = (await req.json()) as { language?: string };
-    const language = body.language as ElevenLabsLanguage;
+    const language = body.language as MmsLanguage;
     const config = languageConfig[language];
 
     if (!config) {
       return NextResponse.json(
-        { error: "ElevenLabs audio is only available for Yoruba, Hausa, and Igbo." },
+        { error: "Audio is only available for Yoruba, Hausa, and Igbo." },
+        { status: 400 }
+      );
+    }
+
+    if (language === "igbo") {
+      return NextResponse.json(
+        { error: "Igbo audio is not available yet." },
         { status: 400 }
       );
     }
@@ -62,12 +60,12 @@ export async function POST(
       return NextResponse.json({ error: "Report not found" }, { status: 404 });
     }
 
-    const existingAudioUrl = report[config.audioColumn];
-    if (existingAudioUrl) {
-      return NextResponse.json({ audioUrl: existingAudioUrl }, { status: 200 });
+    const existingUrl = report[config.audioColumn as keyof typeof report];
+    if (existingUrl) {
+      return NextResponse.json({ audioUrl: existingUrl }, { status: 200 });
     }
 
-    const text = report[config.textColumn];
+    const text = report[config.textColumn as keyof typeof report] as string | null;
     if (!text) {
       return NextResponse.json(
         { error: `No ${language} interpretation is available for this report.` },

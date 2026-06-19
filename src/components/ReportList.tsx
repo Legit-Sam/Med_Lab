@@ -12,9 +12,11 @@ import {
   Trash2,
   Search,
 } from "lucide-react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import ConfirmDialog from "./ConfirmDialog";
 
 type Report = {
   id: string;
@@ -69,25 +71,26 @@ function StatusBadge({ status }: { status: Report["status"] }) {
 export default function ReportList({ reports, compact = false }: Props) {
   const router = useRouter();
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<
     "all" | "completed" | "processing" | "failed"
   >("all");
 
-  const handleDelete = async (e: React.MouseEvent, id: string) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!confirm("Delete this report permanently?")) return;
-    setDeletingId(id);
+  const handleDelete = useCallback(async () => {
+    if (!deleteTarget) return;
+    setDeletingId(deleteTarget);
+    setDeleteTarget(null);
     try {
-      await fetch(`/api/reports/${id}`, { method: "DELETE" });
+      await fetch(`/api/reports/${deleteTarget}`, { method: "DELETE" });
+      toast.success("Report deleted.");
       router.refresh();
     } catch {
-      alert("Failed to delete report");
+      toast.error("Failed to delete report.");
     } finally {
       setDeletingId(null);
     }
-  };
+  }, [deleteTarget, router]);
 
   const filteredReports = useMemo(() => {
     return reports.filter((report) => {
@@ -222,7 +225,11 @@ export default function ReportList({ reports, compact = false }: Props) {
                     )}
                     <button
                       id={`delete-report-${report.id}`}
-                      onClick={(e) => handleDelete(e, report.id)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setDeleteTarget(report.id);
+                      }}
                       disabled={deletingId === report.id}
                       aria-label="Delete report"
                       className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all opacity-0 group-hover:opacity-100"
@@ -251,6 +258,15 @@ export default function ReportList({ reports, compact = false }: Props) {
           })}
         </div>
       )}
+      <ConfirmDialog
+        open={deleteTarget !== null}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        onConfirm={handleDelete}
+        title="Delete Report"
+        description="Are you sure you want to permanently delete this report? This action cannot be undone."
+        confirmLabel="Delete permanently"
+        isLoading={deletingId !== null}
+      />
     </div>
   );
 }

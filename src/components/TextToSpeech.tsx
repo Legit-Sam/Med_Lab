@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { Loader2, Pause, Play, Square, Volume2 } from "lucide-react";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import type { Language } from "@/types";
 
@@ -19,7 +20,8 @@ const LANG_CODE_MAP: Record<string, string> = {
   igbo: "ig-NG",
 };
 
-const ELEVENLABS_LANGUAGES = new Set<Language>(["yoruba", "hausa", "igbo"]);
+const GENERATED_AUDIO_LANGUAGES = new Set<Language>(["yoruba", "hausa"]);
+
 
 export default function TextToSpeech({
   text,
@@ -34,6 +36,23 @@ export default function TextToSpeech({
   const [error, setError] = useState<string | null>(null);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  useEffect(() => {
+    window.speechSynthesis.cancel();
+    audioRef.current?.pause();
+    if (audioRef.current) audioRef.current.currentTime = 0;
+    audioRef.current = null;
+    utteranceRef.current = null;
+    setIsPlaying(false);
+    setIsPaused(false);
+    setError(null);
+    setAudioUrl(null);
+
+    return () => {
+      window.speechSynthesis.cancel();
+      audioRef.current?.pause();
+    };
+  }, [language, text]);
 
   const stop = useCallback(() => {
     window.speechSynthesis.cancel();
@@ -104,7 +123,7 @@ export default function TextToSpeech({
     window.speechSynthesis.speak(utterance);
   }, [text, language, isPaused]);
 
-  const playElevenLabsSpeech = useCallback(async () => {
+  const playGeneratedSpeech = useCallback(async () => {
     if (!reportId) {
       setError("Audio is not available for this report.");
       return;
@@ -162,7 +181,12 @@ export default function TextToSpeech({
   }, [audioUrl, language, reportId]);
 
   const play = useCallback(() => {
-    if (ELEVENLABS_LANGUAGES.has(language)) {
+    if (language === "igbo") {
+      toast.info("Igbo audio is not available yet. Coming soon!");
+      return;
+    }
+
+    if (GENERATED_AUDIO_LANGUAGES.has(language)) {
       if (isPaused && audioRef.current) {
         audioRef.current.play();
         setIsPaused(false);
@@ -170,15 +194,15 @@ export default function TextToSpeech({
         return;
       }
 
-      void playElevenLabsSpeech();
+      void playGeneratedSpeech();
       return;
     }
 
     playBrowserSpeech();
-  }, [isPaused, language, playBrowserSpeech, playElevenLabsSpeech]);
+  }, [isPaused, language, playBrowserSpeech, playGeneratedSpeech]);
 
   const pause = useCallback(() => {
-    if (ELEVENLABS_LANGUAGES.has(language)) {
+    if (GENERATED_AUDIO_LANGUAGES.has(language)) {
       audioRef.current?.pause();
     } else {
       window.speechSynthesis.pause();

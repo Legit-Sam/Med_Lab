@@ -24,6 +24,7 @@ export default function ProfileForm() {
     [country]
   );
   const [selectedState, setSelectedState] = useState(states[0] ?? "");
+  const [selectedLga, setSelectedLga] = useState("");
   const [lgaMode, setLgaMode] = useState<"select" | "custom">("select");
   const lgas = useMemo(() => {
     const countryOptions = LOCATION_OPTIONS[country as keyof typeof LOCATION_OPTIONS];
@@ -40,11 +41,13 @@ export default function ProfileForm() {
     );
     setCountry(value);
     setSelectedState(nextStates[0] ?? "");
+    setSelectedLga("");
     setLgaMode("select");
   }
 
   function onStateChange(value: string) {
     setSelectedState(value);
+    setSelectedLga("");
     setLgaMode("select");
   }
 
@@ -122,10 +125,12 @@ export default function ProfileForm() {
             <Select
               label="Local government area"
               name="lga"
-              value=""
+              value={selectedLga}
               onChange={(e) => {
                 if (e.target.value === "__custom__") {
                   setLgaMode("custom");
+                } else {
+                  setSelectedLga(e.target.value);
                 }
               }}
               error={state.errors?.lga}

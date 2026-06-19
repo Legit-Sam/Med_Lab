@@ -10,6 +10,7 @@ export default function SignUpPage() {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -50,14 +51,15 @@ export default function SignUpPage() {
 
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden px-4 py-12 bg-background">
-      <div
-        aria-hidden
-        className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_60%_40%_at_50%_-10%,var(--color-accent),transparent_70%)]"
-      />
+      <div aria-hidden className="absolute inset-0 -z-10">
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-accent/10 blur-3xl" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-primary/5 blur-3xl" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_50%_-10%,var(--color-accent),transparent_70%)]" />
+      </div>
 
       <div className="relative w-full max-w-md">
-        <Link href="/" className="mb-10 flex items-center justify-center gap-2.5">
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
+        <Link href="/" className="mb-8 flex items-center justify-center gap-2.5 group">
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm group-hover:shadow-md transition-shadow">
             <Activity className="h-5 w-5" />
           </span>
           <span
@@ -70,7 +72,7 @@ export default function SignUpPage() {
 
         <div className="text-center mb-8">
           <h1
-            className="text-3xl font-semibold text-foreground mb-2"
+            className="text-3xl font-semibold text-foreground mb-2 tracking-tight"
             style={{ fontFamily: "var(--font-display)" }}
           >
             Create your free account
@@ -80,7 +82,7 @@ export default function SignUpPage() {
           </p>
         </div>
 
-        <div className="rounded-2xl bg-card border border-border shadow-lg p-6 sm:p-8">
+        <div className="relative rounded-2xl border border-border/50 bg-card/80 backdrop-blur-sm shadow-xl p-6 sm:p-8">
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-foreground mb-1.5">
@@ -92,7 +94,7 @@ export default function SignUpPage() {
                 type="email"
                 autoComplete="email"
                 required
-                className="w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none transition focus:border-ring focus:ring-2 focus:ring-ring/20"
+                className="w-full rounded-xl border border-input bg-background/50 px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none transition-all focus:border-accent/50 focus:ring-2 focus:ring-accent/10 focus:bg-background"
                 placeholder="you@example.com"
               />
             </div>
@@ -109,13 +111,13 @@ export default function SignUpPage() {
                   autoComplete="new-password"
                   required
                   minLength={8}
-                  className="w-full rounded-xl border border-input bg-background px-3 py-2.5 pr-10 text-sm text-foreground placeholder:text-muted-foreground outline-none transition focus:border-ring focus:ring-2 focus:ring-ring/20"
+                  className="w-full rounded-xl border border-input bg-background/50 px-3 py-2.5 pr-10 text-sm text-foreground placeholder:text-muted-foreground outline-none transition-all focus:border-accent/50 focus:ring-2 focus:ring-accent/10 focus:bg-background"
                   placeholder="At least 8 characters"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                   tabIndex={-1}
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -127,22 +129,32 @@ export default function SignUpPage() {
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-foreground mb-1.5">
                 Confirm Password
               </label>
-              <input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                autoComplete="new-password"
-                required
-                minLength={8}
-                className="w-full rounded-xl border border-input bg-background px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none transition focus:border-ring focus:ring-2 focus:ring-ring/20"
-                placeholder="Repeat your password"
-              />
+              <div className="relative">
+                <input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type={showConfirm ? "text" : "password"}
+                  autoComplete="new-password"
+                  required
+                  minLength={8}
+                  className="w-full rounded-xl border border-input bg-background/50 px-3 py-2.5 pr-10 text-sm text-foreground placeholder:text-muted-foreground outline-none transition-all focus:border-accent/50 focus:ring-2 focus:ring-accent/10 focus:bg-background"
+                  placeholder="Repeat your password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirm(!showConfirm)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  tabIndex={-1}
+                >
+                  {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
             </div>
 
             <button
               type="submit"
               disabled={isPending}
-              className="w-full inline-flex items-center justify-center gap-2 h-11 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90 transition-all disabled:opacity-50"
+              className="w-full inline-flex items-center justify-center gap-2 h-12 rounded-xl bg-primary text-primary-foreground font-semibold text-sm shadow-sm hover:shadow-md hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
             >
               {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
               {isPending ? "Creating account..." : "Create account"}
@@ -150,7 +162,7 @@ export default function SignUpPage() {
 
             <p className="text-center text-sm text-muted-foreground">
               Already have an account?{" "}
-              <Link href="/sign-in" className="text-accent hover:text-accent/80 font-medium">
+              <Link href="/sign-in" className="text-accent hover:text-accent/80 font-medium transition-colors">
                 Sign in
               </Link>
             </p>
