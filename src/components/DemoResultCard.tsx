@@ -3,11 +3,10 @@
 import { useState, useMemo } from "react";
 import { ChevronDown, ChevronUp, Activity, FileText, HeartHandshake, Eye } from "lucide-react";
 import LanguageSwitcher from "./LanguageSwitcher";
-import TextToSpeech from "./TextToSpeech";
+import DemoTextToSpeech from "./DemoTextToSpeech";
 import type { Language } from "@/types";
 
 type Props = {
-  reportId?: string;
   english: string;
   yoruba: string;
   hausa: string;
@@ -27,8 +26,7 @@ const TABS: { id: SectionKey; label: string; icon: typeof FileText }[] = [
   { id: "interpretation", label: "Interpretation", icon: HeartHandshake },
 ];
 
-export default function ResultCard({
-  reportId,
+export default function DemoResultCard({
   english,
   yoruba,
   hausa,
@@ -50,11 +48,11 @@ export default function ResultCard({
     igbo: igboAudioUrl,
   };
 
-  const rawText = contentMap[lang] || english;
   const currentText = useMemo(() => {
-    if (!rawText) return "";
-    return rawText.replace(/\*\*/g, "").replace(/^#+\s+/gm, "").trim();
-  }, [rawText]);
+    const raw = contentMap[lang] || english;
+    if (!raw) return "";
+    return raw.replace(/\*\*/g, "").replace(/^#+\s+/gm, "").trim();
+  }, [lang, english, contentMap]);
 
   const sections = useMemo(() => {
     const grouped: Record<SectionKey, string[]> = {
@@ -124,24 +122,17 @@ export default function ResultCard({
 
   const renderParagraphs = (paras: string[]) => {
     if (paras.length === 0) {
-      return (
-        <p className="text-muted-foreground text-sm italic">No data in this section.</p>
-      );
+      return <p className="text-muted-foreground text-sm italic">No data in this section.</p>;
     }
 
     return paras.map((para, i) => {
       const isHeader =
         para.length < 85 &&
-        (para.endsWith(":") ||
-          /^\d+\./.test(para) ||
-          para.toUpperCase() === para);
+        (para.endsWith(":") || /^\d+\./.test(para) || para.toUpperCase() === para);
 
       if (isHeader) {
         return (
-          <h3
-            key={i}
-            className="text-xs font-extrabold text-primary uppercase tracking-wider mt-5 mb-2 first:mt-0"
-          >
+          <h3 key={i} className="text-xs font-extrabold text-primary uppercase tracking-wider mt-5 mb-2 first:mt-0">
             {para}
           </h3>
         );
@@ -149,10 +140,7 @@ export default function ResultCard({
 
       if (/^[•\-*]/.test(para)) {
         return (
-          <div
-            key={i}
-            className="flex gap-2.5 text-sm text-foreground/85 leading-relaxed pl-2 py-0.5"
-          >
+          <div key={i} className="flex gap-2.5 text-sm text-foreground/85 leading-relaxed pl-2 py-0.5">
             <span className="text-primary shrink-0 mt-0.5">▸</span>
             <span>{para.replace(/^[•\-*]\s*/, "")}</span>
           </div>
@@ -160,30 +148,25 @@ export default function ResultCard({
       }
 
       return (
-        <p key={i} className="text-sm text-foreground/85 leading-relaxed mb-3">
-          {para}
-        </p>
+        <p key={i} className="text-sm text-foreground/85 leading-relaxed mb-3">{para}</p>
       );
     });
   };
 
   return (
-    <div id="result-card" className="space-y-6 fade-in">
+    <div className="space-y-6">
       {/* ─── Controls ─── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl border border-border/60 bg-card shadow-sm">
         <div className="space-y-1.5">
-          <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
-            Language
-          </span>
+          <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Language</span>
           <LanguageSwitcher active={lang} onChange={setLang} />
         </div>
-          <TextToSpeech
-            key={lang}
-            reportId={reportId}
-            text={currentText}
-            language={lang}
-            initialAudioUrl={audioUrlMap[lang]}
-          />
+        <DemoTextToSpeech
+          key={lang}
+          text={currentText}
+          language={lang}
+          audioUrl={audioUrlMap[lang]}
+        />
       </div>
 
       {/* ─── Tabs ─── */}
@@ -197,22 +180,17 @@ export default function ResultCard({
                 key={tab.id}
                 onClick={() => setActiveSection(tab.id)}
                 className={`relative flex-1 flex items-center justify-center gap-2 py-3.5 text-xs font-semibold transition-colors select-none ${
-                  isActive
-                    ? "text-foreground"
-                    : "text-muted-foreground hover:text-foreground/70"
+                  isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground/70"
                 }`}
               >
-                {isActive && (
-                  <span className="absolute inset-x-0 bottom-0 h-0.5 bg-primary rounded-full" />
-                )}
+                {isActive && <span className="absolute inset-x-0 bottom-0 h-0.5 bg-primary rounded-full" />}
                 <Icon className="w-4 h-4 shrink-0" />
                 <span>{tab.label}</span>
               </button>
             );
           })}
         </div>
-
-        <div className="p-6 min-h-[180px] transition-opacity duration-200">
+        <div className="p-6 min-h-[180px]">
           <div key={`${lang}-${activeSection}`} className="animate-in fade-in slide-in-from-bottom-1 duration-300">
             {renderParagraphs(sections[activeSection])}
           </div>
