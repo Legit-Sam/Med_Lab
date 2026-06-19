@@ -17,6 +17,7 @@ type Props = {
   igboAudioUrl?: string | null;
   extractedText?: string;
   defaultLanguage?: Language;
+  demo?: boolean;
 };
 
 type SectionKey = "summary" | "findings" | "interpretation";
@@ -38,6 +39,7 @@ export default function ResultCard({
   igboAudioUrl,
   extractedText,
   defaultLanguage = "english",
+  demo = false,
 }: Props) {
   const [lang, setLang] = useState<Language>(defaultLanguage);
   const [activeSection, setActiveSection] = useState<SectionKey>("summary");
@@ -169,13 +171,14 @@ export default function ResultCard({
           </span>
           <LanguageSwitcher active={lang} onChange={setLang} />
         </div>
-        <TextToSpeech
-          key={lang}
-          reportId={reportId}
-          text={currentText}
-          language={lang}
-          initialAudioUrl={audioUrlMap[lang]}
-        />
+          <TextToSpeech
+            key={lang}
+            reportId={reportId}
+            text={currentText}
+            language={lang}
+            initialAudioUrl={audioUrlMap[lang]}
+            demo={demo}
+          />
       </div>
 
       {/* ─── Tabs ─── */}

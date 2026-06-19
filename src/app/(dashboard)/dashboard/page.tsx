@@ -13,6 +13,7 @@ import {
   BarChart3,
   Clock,
   TrendingUp,
+  Eye,
 } from "lucide-react";
 import { getCurrentDbUser } from "@/lib/current-user";
 import { redirect } from "next/navigation";
@@ -167,6 +168,14 @@ export default async function DashboardPage() {
             >
               <PlayCircle className="w-4 h-4" />
               Audio Reader
+            </Link>
+            <Link
+              href="/demo"
+              id="dashboard-demo-btn"
+              className="inline-flex items-center gap-2 h-11 px-5 rounded-xl bg-accent/10 text-accent font-semibold text-sm border border-accent/20 hover:bg-accent/20 active:scale-[0.98] transition-all"
+            >
+              <Eye className="w-4 h-4" />
+              Try Demo
             </Link>
           </div>
         </div>

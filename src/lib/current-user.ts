@@ -1,7 +1,4 @@
 import "server-only";
-import dns from "dns";
-
-dns.setDefaultResultOrder("ipv4first");
 
 import { getCurrentUser } from "@/lib/auth";
 

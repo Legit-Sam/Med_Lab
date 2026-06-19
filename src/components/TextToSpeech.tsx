@@ -11,6 +11,7 @@ type Props = {
   language: Language;
   reportId?: string;
   initialAudioUrl?: string | null;
+  demo?: boolean;
 };
 
 const LANG_CODE_MAP: Record<string, string> = {
@@ -28,6 +29,7 @@ export default function TextToSpeech({
   language,
   reportId,
   initialAudioUrl,
+  demo = false,
 }: Props) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -186,7 +188,7 @@ export default function TextToSpeech({
       return;
     }
 
-    if (GENERATED_AUDIO_LANGUAGES.has(language)) {
+    if (GENERATED_AUDIO_LANGUAGES.has(language) && !demo) {
       if (isPaused && audioRef.current) {
         audioRef.current.play();
         setIsPaused(false);
@@ -199,7 +201,7 @@ export default function TextToSpeech({
     }
 
     playBrowserSpeech();
-  }, [isPaused, language, playBrowserSpeech, playGeneratedSpeech]);
+  }, [isPaused, language, demo, playBrowserSpeech, playGeneratedSpeech]);
 
   const pause = useCallback(() => {
     if (GENERATED_AUDIO_LANGUAGES.has(language)) {

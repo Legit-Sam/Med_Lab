@@ -1,7 +1,4 @@
 import "server-only";
-import dns from "dns";
-
-dns.setDefaultResultOrder("ipv4first");
 
 import { cookies } from "next/headers";
 import { eq, and, gt } from "drizzle-orm";
