@@ -1,19 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { and, eq } from "drizzle-orm";
 import { db } from "@/db";
-import { reports } from "@/db/schema";
+import { reports, ttsJobs } from "@/db/schema";
 import { getCurrentDbUser } from "@/lib/current-user";
-import {
-  MmsLanguage,
-  generateAndStoreSpeech,
-} from "@/lib/mms-tts";
 import { createRequestId, getErrorMessage } from "@/lib/api-errors";
+import { randomUUID } from "crypto";
 
 const languageConfig: Record<string, { textColumn: string; audioColumn: string }> = {
   yoruba: { textColumn: "yorubaResult", audioColumn: "yorubaAudioUrl" },
   hausa: { textColumn: "hausaResult", audioColumn: "hausaAudioUrl" },
   igbo: { textColumn: "igboResult", audioColumn: "igboAudioUrl" },
 };
+
+const TTS_API_URL = process.env.MMS_TTS_API_URL || "http://localhost:8001";
+const PUBLIC_URL = process.env.PUBLIC_URL || "http://localhost:3000";
 
 export async function POST(
   req: NextRequest,
@@ -35,7 +35,7 @@ export async function POST(
 
     const { id } = await params;
     const body = (await req.json()) as { language?: string };
-    const language = body.language as MmsLanguage;
+    const language = body.language as string;
     const config = languageConfig[language];
 
     if (!config) {
@@ -73,18 +73,42 @@ export async function POST(
       );
     }
 
-    const audioUrl = await generateAndStoreSpeech({
+    const jobId = randomUUID();
+
+    await db.insert(ttsJobs).values({
+      id: jobId,
       reportId: report.id,
-      language,
-      text,
+      language: language as "yoruba" | "hausa",
+      status: "pending",
     });
 
-    await db
-      .update(reports)
-      .set({ [config.audioColumn]: audioUrl })
-      .where(and(eq(reports.id, report.id), eq(reports.userId, user.id)));
+    const speechText = text
+      .replace(/\*\*/g, "").replace(/\*/g, "")
+      .replace(/#/g, "").replace(/^[-\s•▸]+/gm, "")
+      .replace(/\n+/g, " ").replace(/\s+/g, " ").trim();
 
-    return NextResponse.json({ audioUrl }, { status: 200 });
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    const apiKey = process.env.TTS_API_KEY;
+    if (apiKey) headers["x-api-key"] = apiKey;
+
+    fetch(`${TTS_API_URL}/tts`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        text: speechText,
+        language,
+        job_id: jobId,
+        callback_url: `${PUBLIC_URL}/api/tts-callback`,
+      }),
+    }).catch((err) => {
+      console.error("Failed to dispatch TTS job:", err);
+      db.update(ttsJobs)
+        .set({ status: "failed", error: err.message, updatedAt: new Date() })
+        .where(eq(ttsJobs.id, jobId))
+        .catch(() => {});
+    });
+
+    return NextResponse.json({ jobId, status: "pending" });
   } catch (error) {
     const message = getErrorMessage(error);
     console.error("Report audio API error:", { requestId, message, error });

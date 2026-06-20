@@ -102,6 +102,19 @@ export const analysisJobs = pgTable("analysis_jobs", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const ttsJobs = pgTable("tts_jobs", {
+  id: text("id").primaryKey(),
+  reportId: uuid("report_id")
+    .notNull()
+    .references(() => reports.id, { onDelete: "cascade" }),
+  language: languageEnum("language").notNull(),
+  status: text("status", { enum: ["pending", "processing", "ready", "failed"] }).default("pending").notNull(),
+  audioUrl: text("audio_url"),
+  error: text("error"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 export type InsertUser = typeof users.$inferInsert;
 export type SelectUser = typeof users.$inferSelect;
 export type InsertReport = typeof reports.$inferInsert;
@@ -110,3 +123,5 @@ export type InsertSession = typeof sessions.$inferInsert;
 export type SelectSession = typeof sessions.$inferSelect;
 export type InsertAnalysisJob = typeof analysisJobs.$inferInsert;
 export type SelectAnalysisJob = typeof analysisJobs.$inferSelect;
+export type InsertTtsJob = typeof ttsJobs.$inferInsert;
+export type SelectTtsJob = typeof ttsJobs.$inferSelect;

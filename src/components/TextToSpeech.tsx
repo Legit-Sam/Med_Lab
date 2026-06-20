@@ -123,6 +123,8 @@ export default function TextToSpeech({
     window.speechSynthesis.speak(utterance);
   }, [text, language, isPaused]);
 
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
   const playGeneratedSpeech = useCallback(async () => {
     if (!reportId) {
       setError("Audio is not available for this report.");
@@ -133,52 +135,106 @@ export default function TextToSpeech({
     setIsLoading(true);
 
     try {
-      let nextAudioUrl = audioUrl;
-      if (!nextAudioUrl) {
-        nextAudioUrl = await fetch(`/api/reports/${reportId}/audio`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ language }),
-        }).then(async (response) => {
-          const data = (await response.json()) as {
-            audioUrl?: string;
-            error?: string;
-          };
-          if (!response.ok || !data.audioUrl) {
-            throw new Error(data.error || "Failed to generate audio.");
-          }
-          return data.audioUrl;
-        });
+      const res = await fetch(`/api/reports/${reportId}/audio`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ language }),
+      });
+      const data = (await res.json()) as {
+        jobId?: string;
+        audioUrl?: string;
+        status?: string;
+        error?: string;
+      };
+
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to generate audio.");
       }
 
-      if (!nextAudioUrl) {
-        throw new Error("Generated audio URL was not returned.");
+      if (data.audioUrl) {
+        setAudioUrl(data.audioUrl);
+        await playUrl(data.audioUrl);
+        return;
       }
+
+      if (!data.jobId) {
+        throw new Error("No job ID returned.");
+      }
+
+      const jobId = data.jobId;
+
+      toast.info(`Generating ${language} audio in the background. We'll play it when ready!`, {
+        duration: 4000,
+      });
+
+      const nextAudioUrl = await new Promise<string>((resolve, reject) => {
+        let attempts = 0;
+        const maxAttempts = 120;
+
+        pollRef.current = setInterval(async () => {
+          attempts++;
+          try {
+            const statusRes = await fetch(`/api/tts-status/${jobId}`);
+            const statusData = (await statusRes.json()) as {
+              status: string;
+              audioUrl?: string;
+              error?: string;
+            };
+
+            if (statusData.status === "ready" && statusData.audioUrl) {
+              if (pollRef.current) clearInterval(pollRef.current);
+              resolve(statusData.audioUrl);
+            } else if (statusData.status === "failed") {
+              if (pollRef.current) clearInterval(pollRef.current);
+              reject(new Error(statusData.error || "Audio generation failed."));
+            } else if (attempts >= maxAttempts) {
+              if (pollRef.current) clearInterval(pollRef.current);
+              reject(new Error("Audio generation timed out."));
+            }
+          } catch {
+            if (attempts >= maxAttempts) {
+              if (pollRef.current) clearInterval(pollRef.current);
+              reject(new Error("Audio generation timed out."));
+            }
+          }
+        }, 2000);
+      });
 
       setAudioUrl(nextAudioUrl);
-
-      audioRef.current?.pause();
-      const audio = new Audio(nextAudioUrl);
-      audioRef.current = audio;
-      audio.addEventListener("ended", () => {
-        setIsPlaying(false);
-        setIsPaused(false);
-      });
-      audio.addEventListener("error", () => {
-        setIsPlaying(false);
-        setIsPaused(false);
-        setError("Unable to play generated audio.");
-      });
-
-      await audio.play();
-      setIsPlaying(true);
-      setIsPaused(false);
+      toast.success(`${language.charAt(0).toUpperCase() + language.slice(1)} audio ready!`);
+      await playUrl(nextAudioUrl);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to generate audio.");
+      const msg = err instanceof Error ? err.message : "Failed to generate audio.";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setIsLoading(false);
     }
   }, [audioUrl, language, reportId]);
+
+  useEffect(() => {
+    return () => {
+      if (pollRef.current) clearInterval(pollRef.current);
+    };
+  }, []);
+
+  const playUrl = async (url: string) => {
+    audioRef.current?.pause();
+    const audio = new Audio(url);
+    audioRef.current = audio;
+    audio.addEventListener("ended", () => {
+      setIsPlaying(false);
+      setIsPaused(false);
+    });
+    audio.addEventListener("error", () => {
+      setIsPlaying(false);
+      setIsPaused(false);
+      setError("Unable to play generated audio.");
+    });
+    await audio.play();
+    setIsPlaying(true);
+    setIsPaused(false);
+  };
 
   const play = useCallback(() => {
     if (language === "igbo") {
@@ -245,7 +301,7 @@ export default function TextToSpeech({
           ) : (
             <Play className="w-3.5 h-3.5" />
           )}
-          {isLoading ? "Preparing" : isPaused ? "Resume" : "Play"}
+          {isLoading ? "Generating..." : isPaused ? "Resume" : "Play"}
         </button>
 
         {/* Pause */}

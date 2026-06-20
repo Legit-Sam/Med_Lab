@@ -1,9 +1,15 @@
 import "server-only";
+import { Agent, fetch as undiciFetch } from "undici";
 import { UTApi, UTFile } from "uploadthing/server";
 
 export type MmsLanguage = "yoruba" | "hausa" | "igbo";
 
 const API_URL = process.env.MMS_TTS_API_URL || "http://localhost:8001";
+
+const agent = new Agent({
+  bodyTimeout: 600_000,    // 10 minutes for model loading + generation
+  headersTimeout: 60_000,  // 60 seconds for headers
+});
 
 export async function generateAndStoreSpeech({
   reportId,
@@ -23,13 +29,14 @@ export async function generateAndStoreSpeech({
     .replace(/\n+/g, " ").replace(/\s+/g, " ").trim();
 
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 300_000);
+  const timeout = setTimeout(() => controller.abort(), 600_000);
 
-  const res = await fetch(`${API_URL}/tts`, {
+  const res = await undiciFetch(`${API_URL}/tts`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ text: speechText, language }),
     signal: controller.signal,
+    dispatcher: agent,
   });
   clearTimeout(timeout);
 
