@@ -100,13 +100,20 @@ export async function POST(
         job_id: jobId,
         callback_url: `${PUBLIC_URL}/api/tts-callback`,
       }),
-    }).catch((err) => {
-      console.error("Failed to dispatch TTS job:", err);
-      db.update(ttsJobs)
-        .set({ status: "failed", error: err.message, updatedAt: new Date() })
-        .where(eq(ttsJobs.id, jobId))
-        .catch(() => {});
-    });
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          const body = await res.text().catch(() => "");
+          throw new Error(`TTS server returned ${res.status}: ${body}`);
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to dispatch TTS job:", err);
+        db.update(ttsJobs)
+          .set({ status: "failed", error: err.message, updatedAt: new Date() })
+          .where(eq(ttsJobs.id, jobId))
+          .catch(() => {});
+      });
 
     return NextResponse.json({ jobId, status: "pending" });
   } catch (error) {
