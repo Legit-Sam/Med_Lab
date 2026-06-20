@@ -38,6 +38,8 @@ MANDATORY STRUCTURE FOR YORUBA, HAUSA, AND IGBO:
 4. CLINICAL INTERPRETATION (Professional clinical context in native language)
 5. POSSIBLE NEXT ACTIONS (General lifestyle guidelines and doctor consultation advice in local dialect)
 
+LENGTH CONSTRAINT: Each Yoruba, Hausa, and Igbo report must be between 2500 and 2800 characters. Keep them detailed but concise — shorter paragraphs, no repetition, every sentence must add value. English report has no length limit.
+
 FORMATTING CONSTRAINTS:
 - Do NOT output any markdown bolding like "**" or "* **" in ANY language. Use clean, plain text formatting. All output must be written without double asterisks.
 
@@ -153,6 +155,8 @@ MANDATORY STRUCTURE FOR YORUBA, HAUSA, AND IGBO REPORTS:
 3. DETAILED ANALYSIS (Break down each parameter with explanation in local dialect)
 4. CLINICAL INTERPRETATION (Professional clinical context in native language)
 5. POSSIBLE NEXT ACTIONS (General lifestyle guidelines and doctor consultation advice in local dialect)
+
+LENGTH CONSTRAINT: Each Yoruba, Hausa, and Igbo report must be between 2500 and 2800 characters. Keep them detailed but concise — shorter paragraphs, no repetition, every sentence must add value. English report has no length limit.
 
 FORMATTING CONSTRAINTS:
 - Do NOT output any markdown bolding like "**" or "* **" in ANY language. Use clean, plain text formatting. All output must be written without double asterisks.

@@ -169,7 +169,7 @@ export default function TextToSpeech({
 
       const nextAudioUrl = await new Promise<string>((resolve, reject) => {
         let attempts = 0;
-        const maxAttempts = 120;
+        const maxAttempts = 300; // 10 min at 2s intervals for long TTS
 
         pollRef.current = setInterval(async () => {
           attempts++;

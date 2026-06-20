@@ -199,7 +199,7 @@ export default function FileUploader() {
 }
 
 async function pollForCompletion(jobId: string): Promise<string | null> {
-  const maxAttempts = 60;
+  const maxAttempts = 150; // 5 min at 2s intervals
   for (let i = 0; i < maxAttempts; i++) {
     const res = await fetch(`/api/analyze-status/${jobId}`);
     const data = (await res.json()) as AnalyzeResponse;
