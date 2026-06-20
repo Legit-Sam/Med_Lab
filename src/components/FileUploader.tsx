@@ -17,11 +17,12 @@ type UploadState =
 
 type UploadedFile = { fileUrl: string; name: string; type?: string };
 type AnalyzeResponse = {
-  report?: { id: string };
+  jobId?: string;
+  reportId?: string;
+  status?: string;
   error?: string;
   errorMessage?: string;
   errorType?: string;
-  reportId?: string;
   requestId?: string;
 };
 
@@ -62,7 +63,12 @@ export default function FileUploader() {
           throw new Error(formatAnalyzeError(data));
         }
 
-        const reportId = data.report?.id;
+        const jobId = data.jobId;
+        if (!jobId) {
+          throw new Error("Analysis could not be queued.");
+        }
+
+        const reportId = await pollForCompletion(jobId);
         if (!reportId) {
           throw new Error("Analysis completed without a report ID.");
         }
@@ -190,6 +196,23 @@ export default function FileUploader() {
       </div>
     </div>
   );
+}
+
+async function pollForCompletion(jobId: string): Promise<string | null> {
+  const maxAttempts = 60;
+  for (let i = 0; i < maxAttempts; i++) {
+    const res = await fetch(`/api/analyze-status/${jobId}`);
+    const data = (await res.json()) as AnalyzeResponse;
+
+    if (data.status === "completed" && data.reportId) {
+      return data.reportId;
+    }
+    if (data.status === "failed") {
+      throw new Error(data.error || "Analysis failed.");
+    }
+    await new Promise((r) => setTimeout(r, 2000));
+  }
+  throw new Error("Analysis timed out. Please try again.");
 }
 
 function formatAnalyzeError(data: AnalyzeResponse) {
