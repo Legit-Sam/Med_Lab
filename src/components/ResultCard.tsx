@@ -5,6 +5,8 @@ import { ChevronDown, ChevronUp, Activity, FileText, HeartHandshake, Eye } from 
 import LanguageSwitcher from "./LanguageSwitcher";
 import TextToSpeech from "./TextToSpeech";
 import type { Language } from "@/types";
+import { Card } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 
 type Props = {
   reportId?: string;
@@ -170,7 +172,7 @@ export default function ResultCard({
   return (
     <div id="result-card" className="space-y-6 fade-in">
       {/* ─── Controls ─── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl border border-border/60 bg-card shadow-sm">
+      <Card className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4">
         <div className="space-y-1.5">
           <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
             Language
@@ -184,10 +186,10 @@ export default function ResultCard({
             language={lang}
             initialAudioUrl={audioUrlMap[lang]}
           />
-      </div>
+      </Card>
 
       {/* ─── Tabs ─── */}
-      <div className="rounded-2xl border border-border/60 bg-card overflow-hidden shadow-sm">
+      <Card className="overflow-hidden">
         <div className="flex border-b border-border/60">
           {TABS.map((tab) => {
             const isActive = activeSection === tab.id;
@@ -217,11 +219,11 @@ export default function ResultCard({
             {renderParagraphs(sections[activeSection])}
           </div>
         </div>
-      </div>
+      </Card>
 
       {/* ─── Raw Text ─── */}
       {extractedText && (
-        <div className="rounded-2xl border border-border/60 bg-card overflow-hidden shadow-sm">
+        <Card className="overflow-hidden">
           <button
             id="toggle-raw-text-btn"
             onClick={() => setShowRaw(!showRaw)}
@@ -234,13 +236,16 @@ export default function ResultCard({
             {showRaw ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </button>
           {showRaw && (
-            <div className="border-t border-border/60 bg-muted/5">
-              <pre className="m-5 text-[11px] text-muted-foreground font-mono whitespace-pre-wrap leading-relaxed bg-background border border-border/60 rounded-xl p-4 max-h-64 overflow-y-auto shadow-inner">
-                {extractedText}
-              </pre>
-            </div>
+            <>
+              <Separator />
+              <div className="bg-muted/5">
+                <pre className="m-5 text-[11px] text-muted-foreground font-mono whitespace-pre-wrap leading-relaxed bg-background border border-border/60 rounded-xl p-4 max-h-64 overflow-y-auto shadow-inner">
+                  {extractedText}
+                </pre>
+              </div>
+            </>
           )}
-        </div>
+        </Card>
       )}
     </div>
   );

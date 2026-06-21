@@ -1,5 +1,6 @@
 import FileUploader from "@/components/FileUploader";
 import { ShieldCheck, Zap, Globe, Info } from "lucide-react";
+import { Card } from "@/components/ui/card";
 
 export const metadata = {
   title: "Upload Lab Result — WazobiCare Nigeria",
@@ -54,9 +55,9 @@ export default function UploadPage() {
       </div>
 
       {/* Uploader Card */}
-      <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+      <Card className="p-6">
         <FileUploader />
-      </div>
+      </Card>
 
       {/* Fine print / Disclaimer */}
       <div className="flex items-start gap-2.5 max-w-lg mx-auto text-center justify-center">

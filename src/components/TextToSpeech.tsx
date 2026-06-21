@@ -46,7 +46,9 @@ export default function TextToSpeech({
     setIsPlaying(false);
     setIsPaused(false);
     setError(null);
-    setAudioUrl(null);
+    if (!initialAudioUrl) {
+      setAudioUrl(null);
+    }
 
     return () => {
       window.speechSynthesis.cancel();

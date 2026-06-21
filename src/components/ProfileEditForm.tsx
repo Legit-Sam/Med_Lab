@@ -4,6 +4,7 @@ import { useMemo, useState, useTransition } from "react";
 import { LOCATION_OPTIONS } from "@/lib/profile-options";
 import { toast } from "sonner";
 import { CheckCircle2, Loader2, Save } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 type Props = {
   user: {
@@ -306,10 +307,12 @@ export default function ProfileEditForm({ user, onSave }: Props) {
         </label>
       </section>
 
-      <button
+      <Button
         type="submit"
         disabled={isPending}
-        className="btn-primary w-full inline-flex items-center justify-center gap-2 mt-4"
+        variant="accent"
+        fullWidth
+        className="mt-4"
       >
         {isPending ? (
           <Loader2 className="w-4 h-4 animate-spin" />
@@ -317,7 +320,7 @@ export default function ProfileEditForm({ user, onSave }: Props) {
           <Save className="w-4 h-4" />
         )}
         <span>{isPending ? "Saving..." : "Save Profile Details"}</span>
-      </button>
+      </Button>
     </form>
   );
 }

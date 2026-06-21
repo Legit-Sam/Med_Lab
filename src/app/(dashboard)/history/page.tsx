@@ -5,6 +5,7 @@ import ReportList from "@/components/ReportList";
 import { getCurrentDbUser } from "@/lib/current-user";
 import { redirect } from "next/navigation";
 import { FileText } from "lucide-react";
+import { Card } from "@/components/ui/card";
 
 export const metadata = {
   title: "Report History — WazobiCare Nigeria",
@@ -38,14 +39,14 @@ export default async function HistoryPage() {
       </div>
 
       {/* Reports List */}
-      <div className="rounded-2xl border border-border bg-card p-6">
+      <Card className="p-6">
         <ReportList
           reports={userReports.map((r) => ({
             ...r,
             fileName: r.fileName || "Lab Result",
           }))}
         />
-      </div>
+      </Card>
     </div>
   );
 }

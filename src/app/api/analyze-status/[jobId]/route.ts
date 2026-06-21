@@ -22,6 +22,7 @@ export async function GET(
     }
 
     if (job.status === "queued") {
+      // First request claims the job — mark processing and start work
       await db
         .update(analysisJobs)
         .set({ status: "processing", startedAt: new Date() })
@@ -80,6 +81,33 @@ export async function GET(
         logger.error("Analysis failed", { error: processingError });
 
         return NextResponse.json({ status: "failed", error: message });
+      }
+    }
+
+    // Stale processing detection — if a job has been "processing" for > 3 minutes, mark it failed
+    if (job.status === "processing" && job.startedAt) {
+      const elapsed = Date.now() - new Date(job.startedAt).getTime();
+      if (elapsed > 3 * 60 * 1000) {
+        await db
+          .update(reports)
+          .set({ status: "failed" })
+          .where(eq(reports.id, job.reportId));
+
+        await db
+          .update(analysisJobs)
+          .set({
+            status: "failed",
+            failedAt: new Date(),
+            errorMessage: "Analysis timed out after 3 minutes",
+          })
+          .where(eq(analysisJobs.id, job.id));
+
+        logger.warn("Analysis timed out", { metadata: { jobId: job.id } });
+
+        return NextResponse.json({
+          status: "failed",
+          error: "Analysis timed out. Please try again.",
+        });
       }
     }
 

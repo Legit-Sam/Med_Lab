@@ -17,6 +17,9 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import ConfirmDialog from "./ConfirmDialog";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 type Report = {
   id: string;
@@ -36,35 +39,27 @@ function StatusBadge({ status }: { status: Report["status"] }) {
     completed: {
       icon: CheckCircle2,
       text: "Completed",
-      className:
-        "bg-[color:var(--success)]/12 text-[color:var(--success)] border-[color:var(--success)]/20",
+      variant: "success" as const,
     },
     processing: {
       icon: Clock,
       text: "Processing",
-      className:
-        "bg-[color:var(--warning)]/12 text-[color:var(--warning)] border-[color:var(--warning)]/20",
+      variant: "warning" as const,
     },
     failed: {
       icon: XCircle,
       text: "Failed",
-      className:
-        "bg-[color:var(--destructive)]/12 text-[color:var(--destructive)] border-[color:var(--destructive)]/20",
+      variant: "destructive" as const,
     },
   };
 
-  const { icon: Icon, text, className } = config[status];
+  const { icon: Icon, text, variant } = config[status];
 
   return (
-    <span
-      className={cn(
-        "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold border",
-        className,
-      )}
-    >
+    <Badge variant={variant}>
       <Icon className="w-3 h-3" />
       {text}
-    </span>
+    </Badge>
   );
 }
 
@@ -105,31 +100,25 @@ export default function ReportList({ reports, compact = false }: Props) {
 
   if (reports.length === 0) {
     return (
-      <div
-        id="empty-reports"
-        className="surface p-12 flex flex-col items-center justify-center gap-5 text-center border-dashed"
-      >
-        <div className="w-14 h-14 rounded-2xl bg-accent/12 text-accent flex items-center justify-center">
+      <Card className="p-12 flex flex-col items-center justify-center gap-5 text-center border-dashed">
+        <div className="w-14 h-14 rounded-2xl bg-accent/10 text-accent flex items-center justify-center">
           <FileText className="w-6 h-6" />
         </div>
         <div className="space-y-1.5">
-          <h3 className="text-lg font-semibold text-foreground">
-            No reports analysed yet
-          </h3>
+          <h3 className="text-lg font-semibold">No reports analysed yet</h3>
           <p className="text-sm text-muted-foreground max-w-sm leading-relaxed">
-            Upload your laboratory result PDFs or images to get clear
-            translations in Yoruba, Igbo, Hausa, or English.
+            Upload your laboratory result PDFs or images to get clear translations in Yoruba, Igbo, Hausa, or English.
           </p>
         </div>
-        <Link href="/upload" id="empty-upload-cta" className="btn-primary">
-          Upload Lab Result
+        <Link href="/upload">
+          <Button variant="accent">Upload Lab Result</Button>
         </Link>
-      </div>
+      </Card>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {/* Search and Filters — hidden in compact mode */}
       {!compact && (
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -178,82 +167,64 @@ export default function ReportList({ reports, compact = false }: Props) {
               report.fileName?.toLowerCase().endsWith(".pdf");
             const isClickable = report.status === "completed";
 
-            const row = (
-              <div
-                className={cn(
-                  "surface flex items-center justify-between gap-4 group",
-                  compact ? "p-3" : "p-4",
-                  isClickable
-                    ? "surface-hover cursor-pointer"
-                    : "opacity-70",
-                )}
-              >
-                <div className="flex items-center gap-3.5 min-w-0 flex-1">
-                  <div
-                    className={cn(
-                      "w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 border",
-                      isPdf
-                        ? "bg-destructive/8 text-destructive border-destructive/12"
-                        : "bg-chart-2/8 text-chart-2 border-chart-2/12",
-                    )}
-                  >
-                    {isPdf ? (
-                      <FileText className="w-5 h-5" />
-                    ) : (
-                      <ImageIcon className="w-5 h-5" />
-                    )}
-                  </div>
-
-                  <div className="min-w-0 flex-1">
-                    <p className="text-foreground font-medium text-sm truncate group-hover:text-accent transition-colors">
-                      {report.fileName || "Lab Result"}
-                    </p>
-                    <p className="text-muted-foreground text-xs mt-0.5">
-                      {formatDistanceToNow(new Date(report.createdAt), {
-                        addSuffix: true,
-                      })}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 shrink-0">
-                  <StatusBadge status={report.status} />
-
-                  <div className="flex items-center gap-0.5">
-                    {isClickable && (
-                      <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-accent transition-colors" />
-                    )}
-                    <button
-                      id={`delete-report-${report.id}`}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setDeleteTarget(report.id);
-                      }}
-                      disabled={deletingId === report.id}
-                      aria-label="Delete report"
-                      className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all opacity-0 group-hover:opacity-100"
+            return (
+              <Card key={report.id} size="sm" className={cn("group", isClickable ? "hover:bg-muted/50 cursor-pointer transition-colors" : "opacity-70")}>
+                <div
+                  className="flex items-center justify-between gap-4 p-3"
+                  {...(isClickable ? { onClick: () => router.push(`/report/${report.id}`) } : {})}
+                >
+                  <div className="flex items-center gap-3.5 min-w-0 flex-1">
+                    <div
+                      className={cn(
+                        "w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 border",
+                        isPdf
+                          ? "bg-destructive/8 text-destructive border-destructive/12"
+                          : "bg-chart-2/8 text-chart-2 border-chart-2/12",
+                      )}
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+                      {isPdf ? (
+                        <FileText className="w-5 h-5" />
+                      ) : (
+                        <ImageIcon className="w-5 h-5" />
+                      )}
+                    </div>
+
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium text-sm truncate group-hover:text-accent transition-colors">
+                        {report.fileName || "Lab Result"}
+                      </p>
+                      <p className="text-muted-foreground text-xs mt-0.5">
+                        {formatDistanceToNow(new Date(report.createdAt), {
+                          addSuffix: true,
+                        })}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3 shrink-0">
+                    <StatusBadge status={report.status} />
+
+                    <div className="flex items-center gap-0.5">
+                      {isClickable && (
+                        <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-accent transition-colors" />
+                      )}
+                      <button
+                        id={`delete-report-${report.id}`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setDeleteTarget(report.id);
+                        }}
+                        disabled={deletingId === report.id}
+                        aria-label="Delete report"
+                        className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-
-            return isClickable ? (
-              <Link
-                key={report.id}
-                href={`/report/${report.id}`}
-                id={`report-item-${report.id}`}
-                className="block"
-              >
-                {row}
-              </Link>
-            ) : (
-              <div key={report.id} id={`report-item-${report.id}`}>
-                {row}
-              </div>
+              </Card>
             );
           })}
         </div>

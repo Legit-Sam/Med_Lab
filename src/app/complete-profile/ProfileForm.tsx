@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { CheckCircle2 } from "lucide-react";
 import { completeProfile, CompleteProfileState } from "./actions";
 import { LOCATION_OPTIONS } from "@/lib/profile-options";
+import { Button } from "@/components/ui/button";
 
 const initialState: CompleteProfileState = {};
 
@@ -191,9 +192,9 @@ export default function ProfileForm() {
         </Select>
       </section>
 
-      <button type="submit" className="btn-primary w-full" disabled={pending}>
+      <Button type="submit" variant="accent" fullWidth disabled={pending} className="mt-2">
         {pending ? "Saving..." : "Save profile"}
-      </button>
+      </Button>
     </form>
   );
 }

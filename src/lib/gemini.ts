@@ -32,13 +32,14 @@ MANDATORY STRUCTURE FOR ENGLISH:
 6. CLARIFICATIONS (IF NEEDED)
 
 MANDATORY STRUCTURE FOR YORUBA, HAUSA, AND IGBO:
-1. PATIENT LAB SUMMARY (Comprehensive native summary of the report)
-2. KEY FINDINGS (Explain all relevant markers, including normal ranges and context for understanding)
-3. DETAILED ANALYSIS (Break down each parameter with explanation in local dialect)
-4. CLINICAL INTERPRETATION (Professional clinical context in native language)
-5. POSSIBLE NEXT ACTIONS (General lifestyle guidelines and doctor consultation advice in local dialect)
+1. PATIENT LAB SUMMARY (Brief native summary of the report)
+2. KEY FINDINGS (Most important markers only — abnormal values first, then any clinically notable normals)
+3. DETAILED ANALYSIS (Only parameters that are abnormal or clinically significant — do not list every normal parameter individually)
+4. CLINICAL INTERPRETATION (Concise professional clinical context in native language)
+5. POSSIBLE NEXT ACTIONS (2-3 general lifestyle guidelines and doctor consultation advice in local dialect)
 
-LENGTH CONSTRAINT: Each Yoruba, Hausa, and Igbo report must be between 2500 and 2800 characters. Keep them detailed but concise — shorter paragraphs, no repetition, every sentence must add value. English report has no length limit.
+HARD LENGTH LIMIT FOR YORUBA, HAUSA, AND IGBO:
+Each of these three reports MUST be 3000 characters or fewer, counted including spaces and punctuation. This is a strict technical constraint, not a stylistic preference — if you cannot fit all five sections within 3000 characters, you MUST summarize more aggressively and omit minor/normal findings rather than exceed the limit. Prioritize abnormal findings and actionable interpretation over completeness. Before finalizing each of these three reports, mentally count their length and shorten if over 3000 characters.
 
 FORMATTING CONSTRAINTS:
 - Do NOT output any markdown bolding like "**" or "* **" in ANY language. Use clean, plain text formatting. All output must be written without double asterisks.
@@ -100,9 +101,9 @@ export async function analyzeLabResult(
 
   // Clean the text results programmatically
   parsed.english = cleanTextResult(parsed.english);
-  parsed.yoruba = cleanTextResult(parsed.yoruba);
-  parsed.hausa = cleanTextResult(parsed.hausa);
-  parsed.igbo = cleanTextResult(parsed.igbo);
+  parsed.yoruba = enforceLengthLimit(cleanTextResult(parsed.yoruba), NON_ENGLISH_MAX_CHARS);
+  parsed.hausa = enforceLengthLimit(cleanTextResult(parsed.hausa), NON_ENGLISH_MAX_CHARS);
+  parsed.igbo = enforceLengthLimit(cleanTextResult(parsed.igbo), NON_ENGLISH_MAX_CHARS);
 
   return parsed;
 }
@@ -150,13 +151,14 @@ MANDATORY STRUCTURE FOR ENGLISH REPORT:
 6. CLARIFICATIONS (IF NEEDED)
 
 MANDATORY STRUCTURE FOR YORUBA, HAUSA, AND IGBO REPORTS:
-1. PATIENT LAB SUMMARY (Comprehensive native summary of the report)
-2. KEY FINDINGS (Explain all relevant markers, including normal ranges and context for understanding)
-3. DETAILED ANALYSIS (Break down each parameter with explanation in local dialect)
-4. CLINICAL INTERPRETATION (Professional clinical context in native language)
-5. POSSIBLE NEXT ACTIONS (General lifestyle guidelines and doctor consultation advice in local dialect)
+1. PATIENT LAB SUMMARY (Brief native summary of the report)
+2. KEY FINDINGS (Most important markers only — abnormal values first, then any clinically notable normals)
+3. DETAILED ANALYSIS (Only parameters that are abnormal or clinically significant — do not list every normal parameter individually)
+4. CLINICAL INTERPRETATION (Concise professional clinical context in native language)
+5. POSSIBLE NEXT ACTIONS (2-3 general lifestyle guidelines and doctor consultation advice in local dialect)
 
-LENGTH CONSTRAINT: Each Yoruba, Hausa, and Igbo report must be between 2500 and 2800 characters. Keep them detailed but concise — shorter paragraphs, no repetition, every sentence must add value. English report has no length limit.
+HARD LENGTH LIMIT FOR YORUBA, HAUSA, AND IGBO:
+Each of these three reports MUST be 3000 characters or fewer, counted including spaces and punctuation. This is a strict technical constraint, not a stylistic preference — if you cannot fit all five sections within 3000 characters, you MUST summarize more aggressively and omit minor/normal findings rather than exceed the limit. Prioritize abnormal findings and actionable interpretation over completeness. Before finalizing each of these three reports, mentally count their length and shorten if over 3000 characters.
 
 FORMATTING CONSTRAINTS:
 - Do NOT output any markdown bolding like "**" or "* **" in ANY language. Use clean, plain text formatting. All output must be written without double asterisks.
@@ -200,9 +202,9 @@ Return ONLY the JSON object, no markdown fences, no extra text.`;
     extractedText: parsed.extractedText || "",
     analysis: {
       english: cleanTextResult(parsed.english || ""),
-      yoruba: cleanTextResult(parsed.yoruba || ""),
-      hausa: cleanTextResult(parsed.hausa || ""),
-      igbo: cleanTextResult(parsed.igbo || ""),
+      yoruba: enforceLengthLimit(cleanTextResult(parsed.yoruba || ""), NON_ENGLISH_MAX_CHARS),
+      hausa: enforceLengthLimit(cleanTextResult(parsed.hausa || ""), NON_ENGLISH_MAX_CHARS),
+      igbo: enforceLengthLimit(cleanTextResult(parsed.igbo || ""), NON_ENGLISH_MAX_CHARS),
     },
   };
 }
@@ -287,6 +289,31 @@ function isRetryableGeminiError(error: unknown) {
 
 function wait(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+const NON_ENGLISH_MAX_CHARS = 3000;
+
+function enforceLengthLimit(text: string, maxChars: number): string {
+  if (text.length <= maxChars) return text;
+
+  const truncated = text.slice(0, maxChars);
+  const lastBoundary = Math.max(
+    truncated.lastIndexOf(". "),
+    truncated.lastIndexOf(".\n"),
+    truncated.lastIndexOf("? "),
+    truncated.lastIndexOf("! ")
+  );
+
+  const result =
+    lastBoundary > maxChars * 0.7
+      ? truncated.slice(0, lastBoundary + 1).trim()
+      : truncated.trim();
+
+  console.warn(
+    `[gemini] Truncated text from ${text.length} to ${result.length} chars (max ${maxChars})`
+  );
+
+  return result;
 }
 
 function cleanTextResult(text: string): string {

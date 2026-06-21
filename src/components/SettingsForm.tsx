@@ -3,6 +3,7 @@
 import { useState, useTransition, useEffect } from "react";
 import { toast } from "sonner";
 import { Loader2, Save } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 type Props = {
   initialLanguage: string;
@@ -103,10 +104,12 @@ export default function SettingsForm({ initialLanguage, onSave }: Props) {
       </div>
 
       {/* Save Button */}
-      <button
+      <Button
         onClick={handleSave}
         disabled={isPending}
-        className="btn-primary w-full inline-flex items-center justify-center gap-2 mt-4"
+        variant="accent"
+        fullWidth
+        className="mt-4"
       >
         {isPending ? (
           <Loader2 className="w-4 h-4 animate-spin" />
@@ -114,7 +117,7 @@ export default function SettingsForm({ initialLanguage, onSave }: Props) {
           <Save className="w-4 h-4" />
         )}
         <span>{isPending ? "Saving..." : "Save Settings"}</span>
-      </button>
+      </Button>
     </div>
   );
 }

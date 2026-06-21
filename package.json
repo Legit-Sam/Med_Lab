@@ -18,6 +18,7 @@
     "@neondatabase/serverless": "^1.1.0",
     "@pdf-lib/fontkit": "^1.1.1",
     "@radix-ui/react-alert-dialog": "^1.1.17",
+    "@radix-ui/react-separator": "^1.1.10",
     "@uploadthing/react": "^7.3.3",
     "bcryptjs": "^3.0.3",
     "class-variance-authority": "^0.7.1",

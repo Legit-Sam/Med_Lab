@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import ProfileForm from "./ProfileForm";
 import { getCurrentDbUser } from "@/lib/current-user";
+import { Card } from "@/components/ui/card";
 
 export const metadata = {
   title: "Complete Profile - WazobiCare Nigeria",
@@ -20,14 +21,13 @@ export default async function CompleteProfilePage() {
             Complete your medical profile
           </h1>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-            This helps personalize explanations, language preferences, and regional
-            health context before you use the medical AI system.
+            This helps personalize explanations, language preferences, and regional health context before you use the medical AI system.
           </p>
         </div>
 
-        <div className="surface p-4 sm:p-6">
+        <Card className="p-4 sm:p-6">
           <ProfileForm />
-        </div>
+        </Card>
       </div>
     </main>
   );

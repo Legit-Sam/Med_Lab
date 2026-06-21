@@ -7,6 +7,9 @@ import type { OurFileRouter } from "@/app/api/uploadthing/core";
 import { FileText, ImageIcon, AlertCircle, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import Spinner from "./ui/Spinner";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 
 type UploadState =
   | { type: "idle" }
@@ -91,53 +94,45 @@ export default function FileUploader() {
 
   if (state.type === "analyzing") {
     return (
-      <div className="glass-card p-12 flex flex-col items-center justify-center gap-5 min-h-[300px]">
+      <Card className="p-12 flex flex-col items-center justify-center gap-5 min-h-[300px]">
         <Spinner size="lg" />
         <div className="text-center space-y-1">
-          <p className="text-primary font-bold text-base">
-            Analyzing your lab results…
-          </p>
+          <p className="font-semibold text-base">Analyzing your lab results…</p>
           <p className="text-muted-foreground text-xs max-w-sm mx-auto leading-relaxed">
-            Our AI is reading and interpreting your results in Yoruba, Igbo, Hausa, and English. This takes up to 45 seconds.
+            Our AI is reading and interpreting your results in Yoruba, Igbo, Hausa, and English.
           </p>
         </div>
-      </div>
+      </Card>
     );
   }
 
   if (state.type === "success") {
     return (
-      <div className="glass-card p-12 flex flex-col items-center justify-center gap-4 min-h-[300px] fade-in">
+      <Card className="p-12 flex flex-col items-center justify-center gap-4 min-h-[300px] fade-in">
         <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center">
           <CheckCircle2 className="w-7 h-7 text-primary" />
         </div>
         <div className="text-center">
-          <p className="text-primary font-bold text-base">
-            Analysis complete!
-          </p>
+          <p className="font-semibold text-base">Analysis complete!</p>
           <p className="text-muted-foreground text-xs">Redirecting to your results…</p>
         </div>
-      </div>
+      </Card>
     );
   }
 
   if (state.type === "error") {
     return (
       <div className="space-y-4">
-        <div className="glass-card p-6 flex items-start gap-4 border-rose-500/30 bg-rose-500/5">
-          <AlertCircle className="w-5 h-5 text-rose-500 flex-shrink-0 mt-0.5" />
+        <Card className="p-6 flex items-start gap-4 border-destructive/30 bg-destructive/5">
+          <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
           <div className="space-y-0.5">
-            <p className="text-rose-600 dark:text-rose-400 font-bold text-sm">Analysis failed</p>
+            <p className="font-semibold text-sm text-destructive">Analysis failed</p>
             <p className="text-muted-foreground text-xs leading-relaxed">{state.message}</p>
           </div>
-        </div>
-        <button
-          id="retry-upload-btn"
-          onClick={() => setState({ type: "idle" })}
-          className="btn-secondary w-full"
-        >
+        </Card>
+        <Button variant="outline" className="w-full" onClick={() => setState({ type: "idle" })}>
           Try again
-        </button>
+        </Button>
       </div>
     );
   }
@@ -171,7 +166,7 @@ export default function FileUploader() {
           container:
             "border-2 border-dashed border-border hover:border-primary/50 rounded-2xl bg-muted/25 transition-all duration-300 cursor-pointer min-h-[260px] p-6 flex flex-col justify-center items-center gap-1",
           uploadIcon: "text-primary",
-          label: "text-foreground font-bold text-sm",
+          label: "text-foreground font-semibold text-sm",
           allowedContent: "text-muted-foreground text-xs",
           button:
             "!bg-primary !text-primary-foreground font-semibold text-sm rounded-xl px-5 py-2.5 mt-4 hover:opacity-90 transition-all ut-readying:opacity-70 ut-uploading:opacity-70",
@@ -188,7 +183,7 @@ export default function FileUploader() {
           <FileText className="w-4 h-4 text-rose-500" />
           <span>PDF lab reports</span>
         </div>
-        <div className="h-4 w-px bg-border" />
+        <Separator orientation="vertical" className="h-4" />
         <div className="flex items-center gap-2 text-muted-foreground text-xs font-semibold">
           <ImageIcon className="w-4 h-4 text-teal-500" />
           <span>JPG, PNG, WEBP images</span>
