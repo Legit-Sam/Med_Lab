@@ -115,6 +115,14 @@ export const ttsJobs = pgTable("tts_jobs", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+export const uiTranslations = pgTable("ui_translations", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  language: languageEnum("language").notNull(),
+  key: text("key").notNull(),
+  value: text("value").notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 export type InsertUser = typeof users.$inferInsert;
 export type SelectUser = typeof users.$inferSelect;
 export type InsertReport = typeof reports.$inferInsert;
@@ -125,3 +133,5 @@ export type InsertAnalysisJob = typeof analysisJobs.$inferInsert;
 export type SelectAnalysisJob = typeof analysisJobs.$inferSelect;
 export type InsertTtsJob = typeof ttsJobs.$inferInsert;
 export type SelectTtsJob = typeof ttsJobs.$inferSelect;
+export type InsertUiTranslation = typeof uiTranslations.$inferInsert;
+export type SelectUiTranslation = typeof uiTranslations.$inferSelect;

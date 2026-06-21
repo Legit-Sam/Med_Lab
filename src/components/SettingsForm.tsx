@@ -4,16 +4,26 @@ import { useState, useTransition, useEffect } from "react";
 import { toast } from "sonner";
 import { Loader2, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useT } from "@/lib/locale-context";
 
 type Props = {
   initialLanguage: string;
   onSave: (lang: any) => Promise<void>;
 };
 
+const LANGUAGES = [
+  { value: "english", label: "English" },
+  { value: "yoruba", label: "Yorùbá" },
+  { value: "hausa", label: "Hausa" },
+  { value: "igbo", label: "Igbo" },
+];
+
 export default function SettingsForm({ initialLanguage, onSave }: Props) {
+  const { t, setLocale } = useT();
   const [isPending, startTransition] = useTransition();
 
   const [lang, setLang] = useState(initialLanguage);
+  const [uiLang, setUiLang] = useState(initialLanguage);
   const [autoplay, setAutoplay] = useState(false);
   const [emailAlerts, setEmailAlerts] = useState(true);
 
@@ -28,34 +38,53 @@ export default function SettingsForm({ initialLanguage, onSave }: Props) {
     startTransition(async () => {
       try {
         await onSave(lang);
+        setLocale(uiLang as "english" | "yoruba" | "hausa" | "igbo");
         localStorage.setItem("setting_autoplay", String(autoplay));
         localStorage.setItem("setting_email_alerts", String(emailAlerts));
-        toast.success("Settings saved successfully.");
+        toast.success(t("settings.saved"));
       } catch {
-        toast.error("Failed to save settings.");
+        toast.error(t("settings.saveFailed"));
       }
     });
   };
 
   return (
     <div className="space-y-6">
-      {/* Language Setting */}
+      {/* Report Translation Language */}
       <div className="space-y-2">
         <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
-          Default Dialect Translation
+          {t("settings.defaultDialect")}
         </label>
         <p className="text-[10px] text-muted-foreground">
-          Choose the language you want your reports translated to by default.
+          {t("settings.defaultDialectDesc")}
         </p>
         <select
           value={lang}
           onChange={(e) => setLang(e.target.value)}
           className="w-full max-w-md rounded-xl border border-border bg-background px-3 py-2.5 text-xs text-foreground outline-none focus:border-primary/50 transition"
         >
-          <option value="english">English</option>
-          <option value="yoruba">Yorùbá</option>
-          <option value="hausa">Hausa</option>
-          <option value="igbo">Igbo</option>
+          {LANGUAGES.map((l) => (
+            <option key={l.value} value={l.value}>{l.label}</option>
+          ))}
+        </select>
+      </div>
+
+      {/* Interface Language */}
+      <div className="space-y-2">
+        <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
+          {t("profile.preferredLanguage")}
+        </label>
+        <p className="text-[10px] text-muted-foreground">
+          Choose the language for dashboard buttons, labels, and navigation.
+        </p>
+        <select
+          value={uiLang}
+          onChange={(e) => setUiLang(e.target.value)}
+          className="w-full max-w-md rounded-xl border border-border bg-background px-3 py-2.5 text-xs text-foreground outline-none focus:border-primary/50 transition"
+        >
+          {LANGUAGES.map((l) => (
+            <option key={l.value} value={l.value}>{l.label}</option>
+          ))}
         </select>
       </div>
 
@@ -65,7 +94,7 @@ export default function SettingsForm({ initialLanguage, onSave }: Props) {
       {/* Autoplay setting */}
       <div className="space-y-4">
         <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-          Interface Preferences
+          {t("settings.interfacePreferences")}
         </h4>
 
         <label className="flex items-start gap-3 cursor-pointer group select-none">
@@ -77,10 +106,10 @@ export default function SettingsForm({ initialLanguage, onSave }: Props) {
           />
           <div>
             <span className="block text-xs font-bold text-foreground group-hover:text-primary transition-colors">
-              Autoplay Audio Translations
+              {t("settings.autoplayAudio")}
             </span>
             <span className="block text-[10px] text-muted-foreground mt-0.5">
-              Automatically play the text-to-speech reader when viewing a new lab result.
+              {t("settings.autoplayAudioDesc")}
             </span>
           </div>
         </label>
@@ -94,10 +123,10 @@ export default function SettingsForm({ initialLanguage, onSave }: Props) {
           />
           <div>
             <span className="block text-xs font-bold text-foreground group-hover:text-primary transition-colors">
-              Email Notifications
+              {t("settings.emailNotifications")}
             </span>
             <span className="block text-[10px] text-muted-foreground mt-0.5">
-              Send an email notification when your laboratory results processing is complete.
+              {t("settings.emailNotificationsDesc")}
             </span>
           </div>
         </label>
@@ -116,7 +145,7 @@ export default function SettingsForm({ initialLanguage, onSave }: Props) {
         ) : (
           <Save className="w-4 h-4" />
         )}
-        <span>{isPending ? "Saving..." : "Save Settings"}</span>
+        <span>{isPending ? t("settings.saving") : t("settings.saveSettings")}</span>
       </Button>
     </div>
   );

@@ -2,9 +2,79 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { reports, analysisJobs } from "@/db/schema";
 import { processLabFile } from "@/lib/ocr";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { getErrorMessage } from "@/lib/api-errors";
 import { logger } from "@/lib/logger";
+
+async function processJob(jobId: string): Promise<void> {
+  try {
+    const job = await db.query.analysisJobs.findFirst({
+      where: eq(analysisJobs.id, jobId),
+    });
+
+    if (!job || job.status !== "processing") return;
+
+    const report = await db.query.reports.findFirst({
+      where: eq(reports.id, job.reportId),
+    });
+
+    if (!report) throw new Error("Report not found");
+
+    const { extractedText, analysis } = await processLabFile(
+      report.fileUrl,
+      report.fileType
+    );
+
+    await db
+      .update(reports)
+      .set({
+        extractedText,
+        englishResult: analysis.english,
+        yorubaResult: analysis.yoruba,
+        hausaResult: analysis.hausa,
+        igboResult: analysis.igbo,
+        status: "completed",
+      })
+      .where(eq(reports.id, report.id));
+
+    await db
+      .update(analysisJobs)
+      .set({ status: "completed", completedAt: new Date() })
+      .where(eq(analysisJobs.id, job.id));
+
+    logger.info("Analysis completed", {
+      metadata: { reportId: report.id, jobId: job.id },
+    });
+  } catch (processingError) {
+    const message = getErrorMessage(processingError);
+
+    try {
+      const job = await db.query.analysisJobs.findFirst({
+        where: eq(analysisJobs.id, jobId),
+      });
+
+      if (job) {
+        await db
+          .update(reports)
+          .set({ status: "failed" })
+          .where(eq(reports.id, job.reportId));
+
+        await db
+          .update(analysisJobs)
+          .set({
+            status: "failed",
+            failedAt: new Date(),
+            errorMessage: message,
+          })
+          .where(eq(analysisJobs.id, job.id));
+      }
+    } catch {
+      // Best-effort failure recording
+    }
+
+    logger.error("Analysis processing failed", { error: processingError, metadata: { jobId } });
+  }
+}
 
 export async function GET(
   _req: NextRequest,
@@ -22,66 +92,21 @@ export async function GET(
     }
 
     if (job.status === "queued") {
-      // First request claims the job — mark processing and start work
+      // First request claims the job — mark processing and start background work
       await db
         .update(analysisJobs)
         .set({ status: "processing", startedAt: new Date() })
-        .where(eq(analysisJobs.id, job.id));
-
-      try {
-        const report = await db.query.reports.findFirst({
-          where: eq(reports.id, job.reportId),
-        });
-
-        if (!report) throw new Error("Report not found");
-
-        const { extractedText, analysis } = await processLabFile(
-          report.fileUrl,
-          report.fileType
+        .where(
+          and(eq(analysisJobs.id, job.id), eq(analysisJobs.status, "queued"))
         );
 
-        await db
-          .update(reports)
-          .set({
-            extractedText,
-            englishResult: analysis.english,
-            yorubaResult: analysis.yoruba,
-            hausaResult: analysis.hausa,
-            igboResult: analysis.igbo,
-            status: "completed",
-          })
-          .where(eq(reports.id, report.id));
+      // Fire-and-forget — response returns immediately, processing runs in background
+      processJob(job.id);
 
-        await db
-          .update(analysisJobs)
-          .set({ status: "completed", completedAt: new Date() })
-          .where(eq(analysisJobs.id, job.id));
-
-        logger.info("Analysis completed", {
-          metadata: { reportId: report.id, jobId: job.id },
-        });
-
-        return NextResponse.json({
-          status: "completed",
-          reportId: report.id,
-        });
-      } catch (processingError) {
-        const message = getErrorMessage(processingError);
-
-        await db
-          .update(reports)
-          .set({ status: "failed" })
-          .where(eq(reports.id, job.reportId));
-
-        await db
-          .update(analysisJobs)
-          .set({ status: "failed", failedAt: new Date(), errorMessage: message })
-          .where(eq(analysisJobs.id, job.id));
-
-        logger.error("Analysis failed", { error: processingError });
-
-        return NextResponse.json({ status: "failed", error: message });
-      }
+      return NextResponse.json({
+        status: "processing",
+        reportId: job.reportId,
+      });
     }
 
     // Stale processing detection — if a job has been "processing" for > 3 minutes, mark it failed

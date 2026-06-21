@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ThemeToggle from "@/components/ThemeToggle";
+import { useT } from "@/lib/locale-context";
 
 type DashboardShellProps = {
   children: React.ReactNode;
@@ -28,33 +29,31 @@ type DashboardShellProps = {
   };
 };
 
-type NavGroup = {
-  label: string;
-  links: { href: string; label: string; icon: typeof LayoutDashboard }[];
-};
-
-const NAV_GROUPS: NavGroup[] = [
-  {
-    label: "Workspace",
-    links: [
-      { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
-      { href: "/upload", label: "Upload Result", icon: Upload },
-      { href: "/history", label: "Report History", icon: History },
-      { href: "/audio-reader", label: "Audio Reader", icon: Volume2 },
-    ],
-  },
-  {
-    label: "Account",
-    links: [
-      { href: "/profile", label: "Profile", icon: User },
-      { href: "/settings", label: "Settings", icon: Settings },
-    ],
-  },
-];
+function NavGroups({ t }: { t: (key: string) => string }) {
+  return [
+    {
+      label: t("nav.workspace"),
+      links: [
+        { href: "/dashboard", label: t("nav.overview"), icon: LayoutDashboard },
+        { href: "/upload", label: t("nav.uploadResult"), icon: Upload },
+        { href: "/history", label: t("nav.reportHistory"), icon: History },
+        { href: "/audio-reader", label: t("nav.audioReader"), icon: Volume2 },
+      ],
+    },
+    {
+      label: t("nav.account"),
+      links: [
+        { href: "/profile", label: t("nav.profile"), icon: User },
+        { href: "/settings", label: t("nav.settings"), icon: Settings },
+      ],
+    },
+  ];
+}
 
 function UserMenu({ user }: { user: { fullName?: string | null; email: string } }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const { t } = useT();
   const displayName = user.fullName || user.email.split("@")[0];
 
   const handleLogout = async () => {
@@ -92,7 +91,7 @@ function UserMenu({ user }: { user: { fullName?: string | null; email: string } 
               className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-muted-foreground hover:text-destructive hover:bg-destructive/5 transition-colors"
             >
               <LogOut className="w-4 h-4" />
-              <span>Sign out</span>
+              <span>{t("nav.signOut")}</span>
             </button>
           </div>
         </>
@@ -110,6 +109,9 @@ function SidebarContent({
   onNavigate?: () => void;
   user: { fullName?: string | null; email: string };
 }) {
+  const { t } = useT();
+  const navGroups = NavGroups({ t });
+
   return (
     <div className="flex flex-col h-full">
       {/* Brand */}
@@ -122,10 +124,10 @@ function SidebarContent({
             className="text-sm font-bold tracking-tight text-foreground leading-none"
             style={{ fontFamily: "var(--font-display)" }}
           >
-            Wasobi<span className="text-accent">Care</span>
+            {t("nav.brandFirst")}<span className="text-accent">{t("nav.brandLast")}</span>
           </span>
           <span className="text-[10px] text-muted-foreground leading-none mt-0.5">
-            Medical Lab AI
+            {t("nav.brandSubtitle")}
           </span>
         </div>
       </div>
@@ -137,7 +139,7 @@ function SidebarContent({
 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto px-4 py-3 space-y-6">
-        {NAV_GROUPS.map((group) => (
+        {navGroups.map((group) => (
           <div key={group.label}>
             <span className="eyebrow px-3 block mb-2">{group.label}</span>
             <div className="space-y-0.5">
@@ -181,12 +183,12 @@ function SidebarContent({
         <div className="flex items-start gap-2 px-1">
           <Info className="w-3.5 h-3.5 text-muted-foreground shrink-0 mt-0.5" />
           <p className="text-[10px] text-muted-foreground leading-relaxed">
-            For educational purposes only. Always consult a clinical provider.
+            {t("nav.footerDisclaimer")}
           </p>
         </div>
         <div className="flex items-center justify-between">
           <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
-            Theme
+            {t("nav.theme")}
           </span>
           <ThemeToggle size="sm" />
         </div>
@@ -198,6 +200,7 @@ function SidebarContent({
 export default function DashboardShell({ children, user }: DashboardShellProps) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { t } = useT();
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col md:flex-row">
@@ -214,7 +217,7 @@ export default function DashboardShell({ children, user }: DashboardShellProps) 
             className="text-sm font-bold tracking-tight text-foreground"
             style={{ fontFamily: "var(--font-display)" }}
           >
-            Lab<span className="text-accent">Explain</span>
+            {t("nav.mobileBrandFirst")}<span className="text-accent">{t("nav.mobileBrandLast")}</span>
           </span>
         </Link>
 
@@ -225,14 +228,14 @@ export default function DashboardShell({ children, user }: DashboardShellProps) 
               window.location.href = "/";
             }}
             className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-            aria-label="Sign out"
+            aria-label={t("nav.signOut")}
           >
             <LogOut className="w-5 h-5" />
           </button>
           <button
             onClick={() => setMobileOpen(true)}
             className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-            aria-label="Open menu"
+            aria-label={t("nav.openMenu")}
           >
             <Menu className="w-5 h-5" />
           </button>

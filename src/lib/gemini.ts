@@ -39,7 +39,7 @@ MANDATORY STRUCTURE FOR YORUBA, HAUSA, AND IGBO:
 5. POSSIBLE NEXT ACTIONS (2-3 general lifestyle guidelines and doctor consultation advice in local dialect)
 
 HARD LENGTH LIMIT FOR YORUBA, HAUSA, AND IGBO:
-Each of these three reports MUST be 3000 characters or fewer, counted including spaces and punctuation. This is a strict technical constraint, not a stylistic preference — if you cannot fit all five sections within 3000 characters, you MUST summarize more aggressively and omit minor/normal findings rather than exceed the limit. Prioritize abnormal findings and actionable interpretation over completeness. Before finalizing each of these three reports, mentally count their length and shorten if over 3000 characters.
+Each of these three reports MUST be 4200 characters or fewer, counted including spaces and punctuation. This is a strict technical constraint, not a stylistic preference — if you cannot fit all five sections within 4200 characters, you MUST summarize more aggressively and omit minor/normal findings rather than exceed the limit. Prioritize abnormal findings and actionable interpretation over completeness. Before finalizing each of these three reports, mentally count their length and shorten if over 4200 characters.
 
 FORMATTING CONSTRAINTS:
 - Do NOT output any markdown bolding like "**" or "* **" in ANY language. Use clean, plain text formatting. All output must be written without double asterisks.
@@ -158,7 +158,7 @@ MANDATORY STRUCTURE FOR YORUBA, HAUSA, AND IGBO REPORTS:
 5. POSSIBLE NEXT ACTIONS (2-3 general lifestyle guidelines and doctor consultation advice in local dialect)
 
 HARD LENGTH LIMIT FOR YORUBA, HAUSA, AND IGBO:
-Each of these three reports MUST be 3000 characters or fewer, counted including spaces and punctuation. This is a strict technical constraint, not a stylistic preference — if you cannot fit all five sections within 3000 characters, you MUST summarize more aggressively and omit minor/normal findings rather than exceed the limit. Prioritize abnormal findings and actionable interpretation over completeness. Before finalizing each of these three reports, mentally count their length and shorten if over 3000 characters.
+Each of these three reports MUST be 4200 characters or fewer, counted including spaces and punctuation. This is a strict technical constraint, not a stylistic preference — if you cannot fit all five sections within 4200 characters, you MUST summarize more aggressively and omit minor/normal findings rather than exceed the limit. Prioritize abnormal findings and actionable interpretation over completeness. Before finalizing each of these three reports, mentally count their length and shorten if over 4200 characters.
 
 FORMATTING CONSTRAINTS:
 - Do NOT output any markdown bolding like "**" or "* **" in ANY language. Use clean, plain text formatting. All output must be written without double asterisks.
@@ -291,7 +291,7 @@ function wait(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-const NON_ENGLISH_MAX_CHARS = 3000;
+const NON_ENGLISH_MAX_CHARS = 4200;
 
 function enforceLengthLimit(text: string, maxChars: number): string {
   if (text.length <= maxChars) return text;
