@@ -23,6 +23,16 @@ function interpolate(template: string, params?: Record<string, string | number>)
   });
 }
 
+function resolveInitialLocale(serverLocale: Language): Language {
+  if (typeof window !== "undefined") {
+    const saved = localStorage.getItem("ui_locale") as Language | null;
+    if (saved && ["english", "yoruba", "hausa", "igbo"].includes(saved)) {
+      return saved;
+    }
+  }
+  return serverLocale;
+}
+
 export function LocaleProvider({
   children,
   initialLocale = "english",
@@ -32,8 +42,21 @@ export function LocaleProvider({
   initialLocale?: Language;
   translations: TranslationsData;
 }) {
-  const [locale, setLocale] = useState<Language>(initialLocale);
+  const [locale, setLocaleState] = useState<Language>(initialLocale);
   const [data, setData] = useState<TranslationsData>(translations);
+
+  // Restore persisted locale on mount
+  useEffect(() => {
+    const resolved = resolveInitialLocale(initialLocale);
+    if (resolved !== initialLocale) {
+      setLocaleState(resolved);
+    }
+  }, [initialLocale]);
+
+  const setLocale = useCallback((lang: Language) => {
+    localStorage.setItem("ui_locale", lang);
+    setLocaleState(lang);
+  }, []);
 
   const t = useCallback(
     (key: string, params?: Record<string, string | number>): string => {

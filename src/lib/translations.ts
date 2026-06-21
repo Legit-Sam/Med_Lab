@@ -48,6 +48,11 @@ export async function loadAllTranslations(): Promise<Record<string, TranslationM
     grouped[lang][row.key] = row.value;
   }
 
+  // If English has no rows in DB, populate from the JSON fallback
+  if (Object.keys(grouped.english).length === 0) {
+    grouped.english = loadFallbackEnglish();
+  }
+
   cache = { data: grouped, fetchedAt: now };
   return cache.data!;
 }
