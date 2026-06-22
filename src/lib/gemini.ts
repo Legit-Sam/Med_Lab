@@ -316,8 +316,8 @@ function enforceLengthLimit(text: string, maxChars: number): string {
   return result;
 }
 
-function cleanTextResult(text: string): string {
-  if (!text) return "";
+function cleanTextResult(text: unknown): string {
+  if (typeof text !== "string" || !text) return "";
   return text
     // Replace double asterisks (markdown bold) with nothing
     .replace(/\*\*/g, "")
