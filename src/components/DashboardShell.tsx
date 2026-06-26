@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard,
   Upload,
@@ -154,19 +155,23 @@ function SidebarContent({
                     href={href}
                     onClick={onNavigate}
                     className={cn(
-                      "relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150",
+                      "group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150",
                       isActive
-                        ? "bg-primary/8 text-primary font-semibold"
+                        ? "bg-accent/10 text-accent font-semibold"
                         : "text-muted-foreground hover:text-foreground hover:bg-muted/60",
                     )}
                   >
                     {isActive && (
-                      <span className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-full bg-accent" />
+                      <motion.span
+                        layoutId="active-indicator"
+                        className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-6 rounded-full bg-accent"
+                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                      />
                     )}
                     <Icon
                       className={cn(
-                        "w-[18px] h-[18px] transition-colors",
-                        isActive ? "text-accent" : "",
+                        "w-[18px] h-[18px] transition-all duration-150 group-hover:scale-110",
+                        isActive ? "text-accent" : "group-hover:text-accent",
                       )}
                     />
                     <span>{label}</span>
@@ -242,22 +247,34 @@ export default function DashboardShell({ children, user }: DashboardShellProps) 
         </div>
       </header>
 
-      {mobileOpen && (
-        <>
-          <div
-            className="md:hidden fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
-            onClick={() => setMobileOpen(false)}
-            aria-hidden
-          />
-          <div className="md:hidden fixed inset-y-0 left-0 z-50 w-72 bg-card border-r border-border shadow-2xl slide-in-left">
-            <SidebarContent
-              pathname={pathname}
-              user={user}
-              onNavigate={() => setMobileOpen(false)}
+      <AnimatePresence>
+        {mobileOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="md:hidden fixed inset-0 z-40 bg-black/40 backdrop-blur-sm"
+              onClick={() => setMobileOpen(false)}
+              aria-hidden
             />
-          </div>
-        </>
-      )}
+            <motion.div
+              initial={{ x: -300, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: -300, opacity: 0 }}
+              transition={{ duration: 0.3, type: "spring", stiffness: 300, damping: 30 }}
+              className="md:hidden fixed inset-y-0 left-0 z-50 w-72 bg-card border-r border-border shadow-2xl"
+            >
+              <SidebarContent
+                pathname={pathname}
+                user={user}
+                onNavigate={() => setMobileOpen(false)}
+              />
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       <div className="flex-1 flex flex-col min-w-0">
         <main className="flex-1 p-5 md:p-8 lg:p-10 max-w-6xl mx-auto w-full">
