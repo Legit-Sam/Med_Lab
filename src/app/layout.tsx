@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Inter, Fraunces } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import { Toaster } from "sonner";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -69,18 +68,6 @@ export default function RootLayout({
       <body className="font-sans antialiased bg-background text-foreground min-h-screen">
         <ThemeProvider>
           {children}
-          <Toaster
-            position="top-right"
-            richColors
-            closeButton
-            toastOptions={{
-              style: {
-                background: "var(--card)",
-                color: "var(--foreground)",
-                border: "1px solid var(--border)",
-              },
-            }}
-          />
         </ThemeProvider>
       </body>
     </html>

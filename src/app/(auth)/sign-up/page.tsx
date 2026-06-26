@@ -5,13 +5,15 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Activity, Eye, EyeOff, Loader2, CheckCircle2, Globe, Lock, Volume2 } from "lucide-react";
-import { toast } from "sonner";
+import { Modal } from "@/components/ui/modal";
+import { useNotification } from "@/hooks/useNotification";
 
 export default function SignUpPage() {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const { notification, close, error, success } = useNotification();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -22,7 +24,7 @@ export default function SignUpPage() {
     const confirmPassword = form.get("confirmPassword") as string;
 
     if (password !== confirmPassword) {
-      toast.error("Passwords do not match.");
+      error("Passwords do not match", "Please ensure both password fields are identical.");
       return;
     }
 
@@ -37,21 +39,42 @@ export default function SignUpPage() {
         const data = await res.json();
 
         if (!res.ok) {
-          toast.error(data.error || "Registration failed.");
+          error("Registration failed", data.error || "Unable to create your account. Please try again.");
           return;
         }
 
-        toast.success("Account created! Complete your profile to get started.");
-        router.push("/complete-profile");
-        router.refresh();
+        success(
+          "Account created! 🎉",
+          "Complete your profile to get started.",
+          [
+            {
+              label: "Continue",
+              onClick: () => {
+                router.push("/complete-profile");
+                router.refresh();
+              },
+              variant: "primary",
+            },
+          ]
+        );
       } catch {
-        toast.error("Unable to create account. Please try again.");
+        error("Error", "Unable to create account. Please check your connection and try again.");
       }
     });
   };
 
   return (
-    <div className="relative min-h-screen flex overflow-hidden bg-background">
+    <>
+      <Modal
+        isOpen={notification.isOpen}
+        onClose={close}
+        type={notification.type}
+        title={notification.title}
+        description={notification.description}
+        actions={notification.actions}
+        closeOnBackdropClick={!isPending}
+      />
+      <div className="relative min-h-screen flex overflow-hidden bg-background">
       {/* ─── Gradient backdrops ─── */}
       <div aria-hidden className="absolute inset-0 -z-10">
         <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-accent/10 blur-3xl" />
@@ -272,6 +295,7 @@ export default function SignUpPage() {
           </div>
         </div>
       </motion.div>
-    </div>
+      </div>
+    </>
   );
 }

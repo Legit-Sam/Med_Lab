@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+
 import { cn } from "@/lib/utils";
 import ConfirmDialog from "./ConfirmDialog";
 import { Card } from "@/components/ui/card";
@@ -78,10 +78,10 @@ export default function ReportList({ reports, compact = false }: Props) {
     setDeleteTarget(null);
     try {
       await fetch(`/api/reports/${deleteTarget}`, { method: "DELETE" });
-      toast.success("Report deleted.");
+      
       router.refresh();
     } catch {
-      toast.error("Failed to delete report.");
+      
     } finally {
       setDeletingId(null);
     }

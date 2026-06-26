@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { UploadDropzone } from "@uploadthing/react";
 import type { OurFileRouter } from "@/app/api/uploadthing/core";
 import { FileText, ImageIcon, AlertCircle, CheckCircle2 } from "lucide-react";
-import { toast } from "sonner";
 import Spinner from "./ui/Spinner";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -82,7 +81,6 @@ export default function FileUploader() {
         }, 1200);
       } catch (err) {
         const message = err instanceof Error ? err.message : "Failed to analyze file";
-        toast.error(message);
         setState({
           type: "error",
           message,
@@ -159,7 +157,6 @@ export default function FileUploader() {
           }
         }}
         onUploadError={(error) => {
-          toast.error(error.message);
           setState({ type: "error", message: error.message });
         }}
         appearance={{

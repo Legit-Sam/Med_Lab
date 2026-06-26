@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import { Loader2, Pause, Play, Square, Volume2 } from "lucide-react";
-import { toast } from "sonner";
+
 import { cn } from "@/lib/utils";
 import type { Language } from "@/types";
 
@@ -203,12 +203,12 @@ export default function TextToSpeech({
       });
 
       setAudioUrl(nextAudioUrl);
-      toast.success(`${language.charAt(0).toUpperCase() + language.slice(1)} audio ready!`);
+      
       await playUrl(nextAudioUrl);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Failed to generate audio.";
       setError(msg);
-      toast.error(msg);
+      
     } finally {
       setIsLoading(false);
     }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, useActionState } from "react";
-import { toast } from "sonner";
+
 import { CheckCircle2 } from "lucide-react";
 import { completeProfile, CompleteProfileState } from "./actions";
 import { LOCATION_OPTIONS } from "@/lib/profile-options";
@@ -54,7 +54,7 @@ export default function ProfileForm() {
 
   useEffect(() => {
     if (state.message) {
-      toast.error(state.message);
+      
     }
   }, [state.message]);
 

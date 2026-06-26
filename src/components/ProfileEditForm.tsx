@@ -2,7 +2,6 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { LOCATION_OPTIONS } from "@/lib/profile-options";
-import { toast } from "sonner";
 import { CheckCircle2, Loader2, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -99,9 +98,8 @@ export default function ProfileEditForm({ user, onSave }: Props) {
     startTransition(async () => {
       try {
         await onSave(formData);
-        toast.success("Profile updated successfully.");
-      } catch {
-        toast.error("Failed to save profile. Please try again.");
+      } catch (err) {
+        console.error("Failed to save profile:", err);
       }
     });
   };

@@ -5,12 +5,14 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Activity, Eye, EyeOff, Loader2, Lock, FileText, Zap } from "lucide-react";
-import { toast } from "sonner";
+import { Modal } from "@/components/ui/modal";
+import { useNotification } from "@/hooks/useNotification";
 
 export default function SignInPage() {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [showPassword, setShowPassword] = useState(false);
+  const { notification, close, error, success } = useNotification();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -30,21 +32,42 @@ export default function SignInPage() {
         const data = await res.json();
 
         if (!res.ok) {
-          toast.error(data.error || "Login failed.");
+          error("Sign in failed", data.error || "Invalid email or password. Please try again.");
           return;
         }
 
-        toast.success("Signed in successfully.");
-        router.push("/dashboard");
-        router.refresh();
+        success(
+          "Welcome back! 👋",
+          "Redirecting to your dashboard...",
+          [
+            {
+              label: "Go to Dashboard",
+              onClick: () => {
+                router.push("/dashboard");
+                router.refresh();
+              },
+              variant: "primary",
+            },
+          ]
+        );
       } catch {
-        toast.error("Unable to sign in. Please try again.");
+        error("Connection error", "Unable to sign in. Please check your connection and try again.");
       }
     });
   };
 
   return (
-    <div className="relative min-h-screen flex overflow-hidden bg-background">
+    <>
+      <Modal
+        isOpen={notification.isOpen}
+        onClose={close}
+        type={notification.type}
+        title={notification.title}
+        description={notification.description}
+        actions={notification.actions}
+        closeOnBackdropClick={!isPending}
+      />
+      <div className="relative min-h-screen flex overflow-hidden bg-background">
       {/* ─── Gradient backdrops ─── */}
       <div aria-hidden className="absolute inset-0 -z-10">
         <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-accent/10 blur-3xl" />
@@ -234,6 +257,7 @@ export default function SignInPage() {
           </div>
         </div>
       </motion.div>
-    </div>
+      </div>
+    </>
   );
 }

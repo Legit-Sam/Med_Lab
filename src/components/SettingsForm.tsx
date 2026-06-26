@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useTransition, useEffect } from "react";
-import { toast } from "sonner";
 import { Loader2, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/lib/locale-context";
@@ -41,9 +40,8 @@ export default function SettingsForm({ initialLanguage, onSave }: Props) {
         setLocale(uiLang as "english" | "yoruba" | "hausa" | "igbo");
         localStorage.setItem("setting_autoplay", String(autoplay));
         localStorage.setItem("setting_email_alerts", String(emailAlerts));
-        toast.success(t("settings.saved"));
-      } catch {
-        toast.error(t("settings.saveFailed"));
+      } catch (err) {
+        console.error("Failed to save settings:", err);
       }
     });
   };
