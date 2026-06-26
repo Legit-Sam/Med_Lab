@@ -2,6 +2,8 @@
 
 import { useState, useTransition, useEffect } from "react";
 import { Loader2, Save } from "lucide-react";
+import { Modal } from "@/components/ui/modal";
+import { useNotification } from "@/hooks/useNotification";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/lib/locale-context";
 
@@ -19,6 +21,7 @@ const LANGUAGES = [
 
 export default function SettingsForm({ initialLanguage, onSave }: Props) {
   const { t, setLocale } = useT();
+  const { notification, close, success } = useNotification();
   const [isPending, startTransition] = useTransition();
 
   const [lang, setLang] = useState(initialLanguage);
@@ -40,6 +43,7 @@ export default function SettingsForm({ initialLanguage, onSave }: Props) {
         setLocale(uiLang as "english" | "yoruba" | "hausa" | "igbo");
         localStorage.setItem("setting_autoplay", String(autoplay));
         localStorage.setItem("setting_email_alerts", String(emailAlerts));
+        success("Settings saved", "Your preferences have been updated successfully.");
       } catch (err) {
         console.error("Failed to save settings:", err);
       }
@@ -47,7 +51,16 @@ export default function SettingsForm({ initialLanguage, onSave }: Props) {
   };
 
   return (
-    <div className="space-y-6">
+    <>
+      <Modal
+        isOpen={notification.isOpen}
+        onClose={close}
+        type={notification.type}
+        title={notification.title}
+        description={notification.description}
+        closeOnBackdropClick={!isPending}
+      />
+      <div className="space-y-6">
       {/* Report Translation Language */}
       <div className="space-y-2">
         <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider">
@@ -145,6 +158,7 @@ export default function SettingsForm({ initialLanguage, onSave }: Props) {
         )}
         <span>{isPending ? t("settings.saving") : t("settings.saveSettings")}</span>
       </Button>
-    </div>
+      </div>
+    </>
   );
 }

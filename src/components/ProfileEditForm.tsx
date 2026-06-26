@@ -3,6 +3,8 @@
 import { useMemo, useState, useTransition } from "react";
 import { LOCATION_OPTIONS } from "@/lib/profile-options";
 import { CheckCircle2, Loader2, Save } from "lucide-react";
+import { Modal } from "@/components/ui/modal";
+import { useNotification } from "@/hooks/useNotification";
 import { Button } from "@/components/ui/button";
 
 type Props = {
@@ -36,6 +38,7 @@ function isKnownLga(country: string, state: string, lga: string): boolean {
 }
 
 export default function ProfileEditForm({ user, onSave }: Props) {
+  const { notification, close, success } = useNotification();
   const [isPending, startTransition] = useTransition();
 
   const countries = Object.keys(LOCATION_OPTIONS);
@@ -98,6 +101,7 @@ export default function ProfileEditForm({ user, onSave }: Props) {
     startTransition(async () => {
       try {
         await onSave(formData);
+        success("Profile updated", "Your profile information has been saved successfully.");
       } catch (err) {
         console.error("Failed to save profile:", err);
       }
@@ -105,7 +109,16 @@ export default function ProfileEditForm({ user, onSave }: Props) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <>
+      <Modal
+        isOpen={notification.isOpen}
+        onClose={close}
+        type={notification.type}
+        title={notification.title}
+        description={notification.description}
+        closeOnBackdropClick={!isPending}
+      />
+      <form onSubmit={handleSubmit} className="space-y-6">
       <div className="flex items-center justify-between border-b border-border/60 pb-3 mb-4">
         <h3 className="text-sm font-bold text-foreground">Edit Profile Information</h3>
       </div>
@@ -319,6 +332,7 @@ export default function ProfileEditForm({ user, onSave }: Props) {
         )}
         <span>{isPending ? "Saving..." : "Save Profile Details"}</span>
       </Button>
-    </form>
+      </form>
+    </>
   );
 }
