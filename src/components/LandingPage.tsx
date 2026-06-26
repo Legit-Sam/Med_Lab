@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import {
@@ -267,13 +268,15 @@ export default function LandingPage() {
             transition={{ duration: 0.7, delay: 0.4 }}
             className="mt-16 mx-auto max-w-5xl rounded-2xl border border-border/80 bg-card p-3 shadow-2xl dark:shadow-2xl/40"
           >
-            <div className="overflow-hidden rounded-xl border border-border/40 relative aspect-[16/9] w-full bg-muted">
-              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-muted to-muted/50">
-                <div className="text-center space-y-2">
-                  <Sparkles className="h-12 w-12 text-accent/40 mx-auto" />
-                  <p className="text-sm text-muted-foreground">Dashboard preview</p>
-                </div>
-              </div>
+            <div className="overflow-hidden rounded-xl border border-border/40 relative aspect-video w-full bg-muted">
+              <Image
+                src="/hero_dashboard.png"
+                alt="WazobiCare Premium Dashboard"
+                fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1200px"
+                className="object-cover"
+                priority
+              />
             </div>
           </motion.div>
         </section>
@@ -386,10 +389,14 @@ export default function LandingPage() {
                   ))}
                 </div>
               </div>
-              <div className="relative aspect-[4/3] w-full max-w-lg mx-auto rounded-xl overflow-hidden border border-border shadow-lg bg-muted">
-                <div className="w-full h-full flex items-center justify-center">
-                  <Lock className="h-16 w-16 text-muted-foreground/30" />
-                </div>
+              <div className="relative aspect-4/3 w-full max-w-lg mx-auto rounded-xl overflow-hidden border border-border shadow-lg bg-muted">
+                <Image
+                  src="/upload_illustration.png"
+                  alt="AI scanning lab results"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 500px"
+                  className="object-cover"
+                />
               </div>
             </motion.div>
 
@@ -400,10 +407,14 @@ export default function LandingPage() {
               transition={{ duration: 0.6 }}
               className="grid gap-12 lg:grid-cols-2 items-center"
             >
-              <div className="relative aspect-[4/3] w-full max-w-lg mx-auto rounded-xl overflow-hidden border border-border shadow-lg bg-muted order-2 lg:order-1">
-                <div className="w-full h-full flex items-center justify-center">
-                  <Globe className="h-16 w-16 text-muted-foreground/30" />
-                </div>
+              <div className="relative aspect-4/3 w-full max-w-lg mx-auto rounded-xl overflow-hidden border border-border shadow-lg bg-muted order-2 lg:order-1">
+                <Image
+                  src="/translate_illustration.png"
+                  alt="AI dashboard language translations"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 500px"
+                  className="object-cover"
+                />
               </div>
               <div className="space-y-6 order-1 lg:order-2">
                 <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-accent">
@@ -478,8 +489,14 @@ export default function LandingPage() {
                     &ldquo;{t.quote}&rdquo;
                   </p>
                   <div className="flex items-center gap-4">
-                    <div className="relative w-10 h-10 rounded-full overflow-hidden bg-accent/20 flex items-center justify-center">
-                      <span className="text-sm font-bold text-accent">{t.author.charAt(0)}</span>
+                    <div className="relative w-10 h-10 rounded-full overflow-hidden bg-accent/20 shrink-0 border border-border/50">
+                      <Image
+                        src={t.avatar}
+                        alt={t.author}
+                        fill
+                        sizes="40px"
+                        className="object-cover"
+                      />
                     </div>
                     <div>
                       <h4 className="text-sm font-bold text-foreground">{t.author}</h4>
