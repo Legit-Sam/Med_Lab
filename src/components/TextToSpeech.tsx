@@ -274,7 +274,15 @@ export default function TextToSpeech({
     cond ? "opacity-50 cursor-not-allowed" : "cursor-pointer";
 
   return (
-    <div className="space-y-2">
+    <>
+      <Modal
+        isOpen={notification.isOpen}
+        onClose={close}
+        type={notification.type}
+        title={notification.title}
+        description={notification.description}
+      />
+      <div className="space-y-2">
       <div
         id="tts-controls"
         className="flex items-center gap-2 p-2 rounded-xl bg-secondary border border-border w-fit"
@@ -346,6 +354,7 @@ export default function TextToSpeech({
       {error ? (
         <p className="text-xs text-destructive">{error}</p>
       ) : null}
-    </div>
+      </div>
+    </>
   );
 }

@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { UploadDropzone } from "@uploadthing/react";
 import type { OurFileRouter } from "@/app/api/uploadthing/core";
 import { FileText, ImageIcon, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Modal } from "@/components/ui/modal";
+import { useNotification } from "@/hooks/useNotification";
 import Spinner from "./ui/Spinner";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -39,6 +41,7 @@ function getTypeFromName(name: string): string {
 
 export default function FileUploader() {
   const router = useRouter();
+  const { notification, close, error: showError, success } = useNotification();
   const [state, setState] = useState<UploadState>({ type: "idle" });
 
   const handleUploadComplete = useCallback(
@@ -81,6 +84,7 @@ export default function FileUploader() {
         }, 1200);
       } catch (err) {
         const message = err instanceof Error ? err.message : "Failed to analyze file";
+        showError("Analysis Failed", message);
         setState({
           type: "error",
           message,
@@ -92,51 +96,86 @@ export default function FileUploader() {
 
   if (state.type === "analyzing") {
     return (
-      <Card className="p-12 flex flex-col items-center justify-center gap-5 min-h-[300px]">
-        <Spinner size="lg" />
-        <div className="text-center space-y-1">
-          <p className="font-semibold text-base">Analyzing your lab results…</p>
-          <p className="text-muted-foreground text-xs max-w-sm mx-auto leading-relaxed">
-            Our AI is reading and interpreting your results in Yoruba, Igbo, Hausa, and English.
-          </p>
-        </div>
-      </Card>
+      <>
+        <Modal
+          isOpen={notification.isOpen}
+          onClose={close}
+          type={notification.type}
+          title={notification.title}
+          description={notification.description}
+        />
+        <Card className="p-12 flex flex-col items-center justify-center gap-5 min-h-[300px]">
+          <Spinner size="lg" />
+          <div className="text-center space-y-1">
+            <p className="font-semibold text-base">Analyzing your lab results…</p>
+            <p className="text-muted-foreground text-xs max-w-sm mx-auto leading-relaxed">
+              Our AI is reading and interpreting your results in Yoruba, Igbo, Hausa, and English.
+            </p>
+          </div>
+        </Card>
+      </>
     );
   }
 
   if (state.type === "success") {
     return (
-      <Card className="p-12 flex flex-col items-center justify-center gap-4 min-h-[300px] fade-in">
-        <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center">
-          <CheckCircle2 className="w-7 h-7 text-primary" />
-        </div>
-        <div className="text-center">
-          <p className="font-semibold text-base">Analysis complete!</p>
-          <p className="text-muted-foreground text-xs">Redirecting to your results…</p>
-        </div>
-      </Card>
+      <>
+        <Modal
+          isOpen={notification.isOpen}
+          onClose={close}
+          type={notification.type}
+          title={notification.title}
+          description={notification.description}
+        />
+        <Card className="p-12 flex flex-col items-center justify-center gap-4 min-h-[300px] fade-in">
+          <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center">
+            <CheckCircle2 className="w-7 h-7 text-primary" />
+          </div>
+          <div className="text-center">
+            <p className="font-semibold text-base">Analysis complete!</p>
+            <p className="text-muted-foreground text-xs">Redirecting to your results…</p>
+          </div>
+        </Card>
+      </>
     );
   }
 
   if (state.type === "error") {
     return (
-      <div className="space-y-4">
-        <Card className="p-6 flex items-start gap-4 border-destructive/30 bg-destructive/5">
-          <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
-          <div className="space-y-0.5">
-            <p className="font-semibold text-sm text-destructive">Analysis failed</p>
-            <p className="text-muted-foreground text-xs leading-relaxed">{state.message}</p>
-          </div>
-        </Card>
-        <Button variant="outline" className="w-full" onClick={() => setState({ type: "idle" })}>
-          Try again
-        </Button>
-      </div>
+      <>
+        <Modal
+          isOpen={notification.isOpen}
+          onClose={close}
+          type={notification.type}
+          title={notification.title}
+          description={notification.description}
+        />
+        <div className="space-y-4">
+          <Card className="p-6 flex items-start gap-4 border-destructive/30 bg-destructive/5">
+            <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
+            <div className="space-y-0.5">
+              <p className="font-semibold text-sm text-destructive">Analysis failed</p>
+              <p className="text-muted-foreground text-xs leading-relaxed">{state.message}</p>
+            </div>
+          </Card>
+          <Button variant="outline" className="w-full" onClick={() => setState({ type: "idle" })}>
+            Try again
+          </Button>
+        </div>
+      </>
     );
   }
 
   return (
-    <div className="space-y-4">
+    <>
+      <Modal
+        isOpen={notification.isOpen}
+        onClose={close}
+        type={notification.type}
+        title={notification.title}
+        description={notification.description}
+      />
+      <div className="space-y-4">
       <UploadDropzone<OurFileRouter, "labResultUploader">
         endpoint="labResultUploader"
         onUploadProgress={(progress) =>
@@ -157,6 +196,7 @@ export default function FileUploader() {
           }
         }}
         onUploadError={(error) => {
+          showError("Upload Failed", error.message);
           setState({ type: "error", message: error.message });
         }}
         appearance={{
@@ -186,7 +226,8 @@ export default function FileUploader() {
           <span>JPG, PNG, WEBP images</span>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
 

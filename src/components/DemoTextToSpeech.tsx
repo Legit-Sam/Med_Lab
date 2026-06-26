@@ -2,7 +2,8 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import { Pause, Play, Square, Volume2 } from "lucide-react";
-
+import { Modal } from "@/components/ui/modal";
+import { useNotification } from "@/hooks/useNotification";
 import { cn } from "@/lib/utils";
 import type { Language } from "@/types";
 
@@ -20,6 +21,7 @@ const LANG_CODES: Record<string, string> = {
 };
 
 export default function DemoTextToSpeech({ text, language, audioUrl }: Props) {
+  const { notification, close } = useNotification();
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -95,7 +97,7 @@ export default function DemoTextToSpeech({ text, language, audioUrl }: Props) {
   }, [audioUrl, playBrowserSpeech]);
 
   const play = useCallback(() => {
-    if (language === "igbo") { toast.info("Igbo audio is not available yet. Coming soon!"); return; }
+    if (language === "igbo") { return; }
 
     if (isPaused && audioRef.current) {
       audioRef.current.play();
@@ -120,7 +122,15 @@ export default function DemoTextToSpeech({ text, language, audioUrl }: Props) {
   const disabled = (cond: boolean) => (cond ? "opacity-50 cursor-not-allowed" : "cursor-pointer");
 
   return (
-    <div className="space-y-2">
+    <>
+      <Modal
+        isOpen={notification.isOpen}
+        onClose={close}
+        type={notification.type}
+        title={notification.title}
+        description={notification.description}
+      />
+      <div className="space-y-2">
       <div className="flex items-center gap-2 p-2 rounded-xl bg-secondary border border-border w-fit">
         <div className="flex items-center gap-1.5 px-2 text-muted-foreground text-xs font-medium">
           <Volume2 className="w-3.5 h-3.5" />
@@ -168,6 +178,7 @@ export default function DemoTextToSpeech({ text, language, audioUrl }: Props) {
           Stop
         </button>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

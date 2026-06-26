@@ -14,7 +14,8 @@ import {
 } from "lucide-react";
 import { useState, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
-
+import { Modal } from "@/components/ui/modal";
+import { useNotification } from "@/hooks/useNotification";
 import { cn } from "@/lib/utils";
 import ConfirmDialog from "./ConfirmDialog";
 import { Card } from "@/components/ui/card";
@@ -65,6 +66,7 @@ function StatusBadge({ status }: { status: Report["status"] }) {
 
 export default function ReportList({ reports, compact = false }: Props) {
   const router = useRouter();
+  const { notification, close, error: showError } = useNotification();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [search, setSearch] = useState("");
@@ -118,7 +120,15 @@ export default function ReportList({ reports, compact = false }: Props) {
   }
 
   return (
-    <div className="space-y-3">
+    <>
+      <Modal
+        isOpen={notification.isOpen}
+        onClose={close}
+        type={notification.type}
+        title={notification.title}
+        description={notification.description}
+      />
+      <div className="space-y-3">
       {/* Search and Filters — hidden in compact mode */}
       {!compact && (
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -238,6 +248,7 @@ export default function ReportList({ reports, compact = false }: Props) {
         confirmLabel="Delete permanently"
         isLoading={deletingId !== null}
       />
-    </div>
+      </div>
+    </>
   );
 }
