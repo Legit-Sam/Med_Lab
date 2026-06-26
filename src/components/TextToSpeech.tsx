@@ -46,7 +46,7 @@ export default function TextToSpeech({
     utteranceRef.current = null;
     setIsPlaying(false);
     setIsPaused(false);
-    setError(null);
+    close();
     if (!initialAudioUrl) {
       setAudioUrl(null);
     }
@@ -70,7 +70,7 @@ export default function TextToSpeech({
 
   const playBrowserSpeech = useCallback(() => {
     if (!("speechSynthesis" in window)) {
-      setError("Text-to-speech is not supported in your browser.");
+      showError("Browser Not Supported", "Text-to-speech is not supported in your browser.");
       return;
     }
 
@@ -130,11 +130,11 @@ export default function TextToSpeech({
 
   const playGeneratedSpeech = useCallback(async () => {
     if (!reportId) {
-      setError("Audio is not available for this report.");
+      showError("Audio Not Available", "Audio is not available for this report.");
       return;
     }
 
-    setError(null);
+    close();
     setIsLoading(true);
 
     try {
@@ -166,9 +166,7 @@ export default function TextToSpeech({
 
       const jobId = data.jobId;
 
-      toast.info(`Generating ${language} audio in the background. We'll play it when ready!`, {
-        duration: 4000,
-      });
+      showError("Generating Audio", `Generating ${language} audio in the background. We'll play it when ready!`);
 
       const nextAudioUrl = await new Promise<string>((resolve, reject) => {
         let attempts = 0;
@@ -208,8 +206,7 @@ export default function TextToSpeech({
       await playUrl(nextAudioUrl);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Failed to generate audio.";
-      setError(msg);
-      
+      showError("Audio Generation Failed", msg);
     } finally {
       setIsLoading(false);
     }
@@ -232,7 +229,7 @@ export default function TextToSpeech({
     audio.addEventListener("error", () => {
       setIsPlaying(false);
       setIsPaused(false);
-      setError("Unable to play generated audio.");
+      showError("Playback Error", "Unable to play generated audio.");
     });
     await audio.play();
     setIsPlaying(true);
@@ -241,7 +238,7 @@ export default function TextToSpeech({
 
   const play = useCallback(() => {
     if (language === "igbo") {
-      toast.info("Igbo audio is not available yet. Coming soon!");
+      showError("Not Available", "Igbo audio is not available yet. Coming soon!");
       return;
     }
 
@@ -351,9 +348,6 @@ export default function TextToSpeech({
           Stop
         </button>
       </div>
-      {error ? (
-        <p className="text-xs text-destructive">{error}</p>
-      ) : null}
       </div>
     </>
   );
