@@ -2,7 +2,8 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import { Loader2, Pause, Play, Square, Volume2 } from "lucide-react";
-
+import { Modal } from "@/components/ui/modal";
+import { useNotification } from "@/hooks/useNotification";
 import { cn } from "@/lib/utils";
 import type { Language } from "@/types";
 
@@ -29,11 +30,11 @@ export default function TextToSpeech({
   reportId,
   initialAudioUrl,
 }: Props) {
+  const { notification, close, error: showError } = useNotification();
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [audioUrl, setAudioUrl] = useState<string | null>(initialAudioUrl ?? null);
-  const [error, setError] = useState<string | null>(null);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 

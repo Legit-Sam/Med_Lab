@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState, useActionState } from "react";
-
 import { CheckCircle2 } from "lucide-react";
+import { Modal } from "@/components/ui/modal";
+import { useNotification } from "@/hooks/useNotification";
 import { completeProfile, CompleteProfileState } from "./actions";
 import { LOCATION_OPTIONS } from "@/lib/profile-options";
 import { Button } from "@/components/ui/button";
@@ -18,6 +19,7 @@ const languages = [
 
 export default function ProfileForm() {
   const [state, action, pending] = useActionState(completeProfile, initialState);
+  const { notification, close, error: showError, success } = useNotification();
   const countries = Object.keys(LOCATION_OPTIONS);
   const [country, setCountry] = useState(countries[0] ?? "");
   const states = useMemo(
@@ -54,12 +56,31 @@ export default function ProfileForm() {
 
   useEffect(() => {
     if (state.message) {
-      
+      if (state.success) {
+        success(
+          "Profile Complete! 🎉",
+          "Your profile has been saved. Redirecting to dashboard..."
+        );
+      } else {
+        showError(
+          "Profile Update Failed",
+          state.message || "Unable to complete your profile. Please try again."
+        );
+      }
     }
-  }, [state.message]);
+  }, [state.message, state.success, showError, success]);
 
   return (
-    <form action={action} className="space-y-6">
+    <>
+      <Modal
+        isOpen={notification.isOpen}
+        onClose={close}
+        type={notification.type}
+        title={notification.title}
+        description={notification.description}
+        closeOnBackdropClick={!pending}
+      />
+      <form action={action} className="space-y-6">
       <div className="flex items-center justify-between gap-4 rounded-lg border border-accent/20 bg-accent/5 px-4 py-3">
         <span className="text-sm font-medium text-accent">Step 1 of 1</span>
         <CheckCircle2 className="h-5 w-5 text-accent" aria-hidden="true" />
@@ -195,7 +216,8 @@ export default function ProfileForm() {
       <Button type="submit" variant="accent" fullWidth disabled={pending} className="mt-2">
         {pending ? "Saving..." : "Save profile"}
       </Button>
-    </form>
+      </form>
+    </>
   );
 }
 
