@@ -9,7 +9,7 @@ import { useT } from "@/lib/locale-context";
 
 type Props = {
   initialLanguage: string;
-  onSave: (lang: string) => Promise<void>;
+  onSave: (lang: "english" | "yoruba" | "hausa" | "igbo") => Promise<void>;
 };
 
 const LANGUAGES = [
@@ -39,7 +39,7 @@ export default function SettingsForm({ initialLanguage, onSave }: Props) {
   const handleSave = () => {
     startTransition(async () => {
       try {
-        await onSave(lang);
+        await onSave(lang as "english" | "yoruba" | "hausa" | "igbo");
         setLocale(uiLang as "english" | "yoruba" | "hausa" | "igbo");
         localStorage.setItem("setting_autoplay", String(autoplay));
         localStorage.setItem("setting_email_alerts", String(emailAlerts));
