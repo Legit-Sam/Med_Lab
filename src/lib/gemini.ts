@@ -33,14 +33,14 @@ MANDATORY STRUCTURE FOR ENGLISH:
 6. CLARIFICATIONS (IF NEEDED)
 
 MANDATORY STRUCTURE FOR YORUBA, HAUSA, AND IGBO:
-1. PATIENT LAB SUMMARY (Brief native summary of the report with relevant clinical context)
-2. KEY FINDINGS (Most important markers — abnormal values first with explanations, then clinically significant normals)
-3. DETAILED ANALYSIS (Explain all abnormal findings with what they mean in native language. Include clinical significance and potential causes where appropriate. Provide context for any borderline results)
-4. CLINICAL INTERPRETATION (Professional clinical context in native language with practical understanding of what results mean for the patient's health)
-5. POSSIBLE NEXT ACTIONS (Detailed 3-5 general lifestyle guidelines specific to findings, plus clear guidance on doctor consultation importance in local dialect)
+1. PATIENT LAB SUMMARY (Detailed native summary of the report with relevant clinical context, explaining the overall health picture)
+2. KEY FINDINGS (Most important markers — abnormal values first with thorough explanations of what each means clinically, then clinically significant normals. Explain each abnormal finding with multiple sentences to ensure comprehension)
+3. DETAILED ANALYSIS (COMPREHENSIVE section: For EACH abnormal finding, provide: what the value means, why it matters clinically, potential causes or underlying conditions that could explain it, and how it relates to other findings. For abnormal panels, explain the clinical significance and interconnections. Use 2-3 sentences per major finding minimum. Include specific health implications)
+4. CLINICAL INTERPRETATION (Extensive professional clinical context in native language. Explain in detail what the combined results mean for the patient's overall health. Discuss potential systemic issues. Provide practical understanding with enough depth that a patient can grasp the seriousness and implications. Use 3-5 detailed sentences)
+5. POSSIBLE NEXT ACTIONS (Detailed 4-6 action items: specific lifestyle guidelines tied directly to abnormal findings, importance of doctor consultation with explanation of urgency, potential investigations that might be needed, dietary considerations if relevant, activity/exercise recommendations, stress management if applicable)
 
-HARD LENGTH LIMIT FOR YORUBA, HAUSA, AND IGBO:
-Each of these three reports MUST be 5200 characters or fewer, counted including spaces and punctuation. This is a strict technical constraint, not a stylistic preference — if you cannot fit all five sections within 5200 characters, you MUST summarize more aggressively and omit minor/normal findings rather than exceed the limit. Prioritize abnormal findings and actionable interpretation over completeness. Before finalizing each of these three reports, mentally count their length and shorten if over 5200 characters. Aim for detailed but concise explanations with thorough context that help readers understand their lab results comprehensively.
+TARGET LENGTH FOR YORUBA, HAUSA, AND IGBO:
+Aim for 4500-5200 characters for each report — use the full space available. This is not a limit to minimize but a target to achieve. Provide detailed, comprehensive explanations that truly educate the patient about their health. Better to use all available space with valuable clinical context than to write short summaries. Expand each section with thorough, professional explanations. Do NOT artificially shorten — maximize the utility of each report by being comprehensive and detailed while staying within the 5200 character technical constraint.
 
 FORMATTING CONSTRAINTS:
 - Do NOT output any markdown bolding like "**" or "* **" in ANY language. Use clean, plain text formatting. All output must be written without double asterisks.
@@ -152,14 +152,14 @@ MANDATORY STRUCTURE FOR ENGLISH REPORT:
 6. CLARIFICATIONS (IF NEEDED)
 
 MANDATORY STRUCTURE FOR YORUBA, HAUSA, AND IGBO REPORTS:
-1. PATIENT LAB SUMMARY (Brief native summary of the report)
-2. KEY FINDINGS (Most important markers only — abnormal values first, then any clinically notable normals)
-3. DETAILED ANALYSIS (Only parameters that are abnormal or clinically significant — do not list every normal parameter individually)
-4. CLINICAL INTERPRETATION (Concise professional clinical context in native language)
-5. POSSIBLE NEXT ACTIONS (2-3 general lifestyle guidelines and doctor consultation advice in local dialect)
+1. PATIENT LAB SUMMARY (Detailed native summary of the report with overall clinical context and health picture)
+2. KEY FINDINGS (Most important markers — abnormal values first with thorough explanations, then clinically notable normals. Explain each with multiple sentences for clarity)
+3. DETAILED ANALYSIS (COMPREHENSIVE: For EACH abnormal finding, explain what it means, clinical significance, potential causes, and health implications. Use 2-3 sentences minimum per major finding. Include interconnections between findings)
+4. CLINICAL INTERPRETATION (Extensive professional clinical context in native language. Explain what combined results mean for overall health. Discuss systemic implications and health outlook with detailed professional assessment)
+5. POSSIBLE NEXT ACTIONS (Detailed 4-6 action items: specific lifestyle changes tied to findings, doctor consultation guidance, potential needed investigations, dietary/activity recommendations specific to findings, stress management if relevant)
 
-HARD LENGTH LIMIT FOR YORUBA, HAUSA, AND IGBO:
-Each of these three reports MUST be 5200 characters or fewer, counted including spaces and punctuation. This is a strict technical constraint, not a stylistic preference — if you cannot fit all five sections within 5200 characters, you MUST summarize more aggressively and omit minor/normal findings rather than exceed the limit. Prioritize abnormal findings and actionable interpretation over completeness. Before finalizing each of these three reports, mentally count their length and shorten if over 5200 characters. Aim for detailed but concise explanations with thorough context that help readers understand their lab results comprehensively.
+TARGET LENGTH FOR YORUBA, HAUSA, AND IGBO:
+Aim for 4500-5200 characters — use the full space to provide comprehensive, detailed professional interpretation. Maximize clinical utility with thorough explanations and context. This is a target to achieve, not a limit to minimize. Better to use all available space with valuable information than to write short summaries. Expand sections with detailed professional explanations while respecting the 5200 character technical constraint.
 
 FORMATTING CONSTRAINTS:
 - Do NOT output any markdown bolding like "**" or "* **" in ANY language. Use clean, plain text formatting. All output must be written without double asterisks.

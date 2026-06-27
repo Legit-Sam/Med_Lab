@@ -20,25 +20,26 @@ const IMAGE_MIME_TYPES: Record<
 
 export async function processLabFile(
   fileUrl: string,
-  fileType: string
+  fileType: string,
+  fileName?: string
 ): Promise<OcrResult> {
   const lowerType = fileType.toLowerCase();
 
   // Handle PDF files
   if (lowerType === "application/pdf" || lowerType.endsWith(".pdf")) {
-    return await processPdf(fileUrl);
+    return await processPdf(fileUrl, fileName);
   }
 
   // Handle image files
   const mimeType = IMAGE_MIME_TYPES[lowerType];
   if (mimeType) {
-    return await processImage(fileUrl, mimeType);
+    return await processImage(fileUrl, mimeType, fileName);
   }
 
   throw new Error(`Unsupported file type: ${fileType}`);
 }
 
-async function processPdf(fileUrl: string): Promise<OcrResult> {
+async function processPdf(fileUrl: string, fileName?: string): Promise<OcrResult> {
   // Download PDF
   const response = await fetch(fileUrl);
   if (!response.ok) {
@@ -73,9 +74,11 @@ async function processPdf(fileUrl: string): Promise<OcrResult> {
 
 async function processImage(
   fileUrl: string,
-  mimeType: "image/jpeg" | "image/png" | "image/webp" | "image/gif"
+  mimeType: "image/jpeg" | "image/png" | "image/webp" | "image/gif",
+  fileName?: string
 ): Promise<OcrResult> {
   const result = await analyzeLabImage(fileUrl, mimeType);
   result.extractedText = cleanOcrText(result.extractedText);
+
   return result;
 }

@@ -78,7 +78,7 @@ export default function ResultCard({
           currentSection = "summary";
         } else if (num === 2 || num === 3) {
           currentSection = "findings";
-        } else if (num >= 4 && num <= 6) {
+        } else if (num >= 4) {
           currentSection = "interpretation";
         }
         grouped[currentSection].push(para);

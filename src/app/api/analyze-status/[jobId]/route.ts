@@ -22,7 +22,8 @@ async function processJob(jobId: string): Promise<void> {
 
     const { extractedText, analysis } = await processLabFile(
       report.fileUrl,
-      report.fileType
+      report.fileType,
+      report.fileName
     );
 
     await db
