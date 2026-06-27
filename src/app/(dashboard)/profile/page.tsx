@@ -33,13 +33,13 @@ export default async function ProfilePage() {
     const fullName = formData.get("fullName") as string;
     const phoneNumber = formData.get("phoneNumber") as string;
     const dateOfBirth = formData.get("dateOfBirth") as string;
-    const gender = formData.get("gender") as any;
+    const gender = formData.get("gender") as "male" | "female" | "prefer_not_to_say" | null;
     const country = formData.get("country") as string;
     const state = formData.get("state") as string;
     const lga = formData.get("lga") as string;
     const address = formData.get("address") as string;
     const occupation = formData.get("occupation") as string;
-    const preferredLanguage = formData.get("preferredLanguage") as any;
+    const preferredLanguage = formData.get("preferredLanguage") as "english" | "yoruba" | "hausa" | "igbo" | null;
 
     await db
       .update(users)

@@ -55,7 +55,7 @@ export default function TextToSpeech({
       window.speechSynthesis.cancel();
       audioRef.current?.pause();
     };
-  }, [language, text]);
+  }, [language, text, close, initialAudioUrl]);
 
   const stop = useCallback(() => {
     window.speechSynthesis.cancel();
@@ -124,9 +124,27 @@ export default function TextToSpeech({
 
     utteranceRef.current = utterance;
     window.speechSynthesis.speak(utterance);
-  }, [text, language, isPaused]);
+  }, [text, language, isPaused, showError]);
 
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const playUrl = useCallback(async (url: string) => {
+    audioRef.current?.pause();
+    const audio = new Audio(url);
+    audioRef.current = audio;
+    audio.addEventListener("ended", () => {
+      setIsPlaying(false);
+      setIsPaused(false);
+    });
+    audio.addEventListener("error", () => {
+      setIsPlaying(false);
+      setIsPaused(false);
+      showError("Playback Error", "Unable to play generated audio.");
+    });
+    await audio.play();
+    setIsPlaying(true);
+    setIsPaused(false);
+  }, [showError]);
 
   const playGeneratedSpeech = useCallback(async () => {
     if (!reportId) {
@@ -210,31 +228,13 @@ export default function TextToSpeech({
     } finally {
       setIsLoading(false);
     }
-  }, [audioUrl, language, reportId]);
+  }, [audioUrl, language, reportId, playUrl, close, showError]);
 
   useEffect(() => {
     return () => {
       if (pollRef.current) clearInterval(pollRef.current);
     };
   }, []);
-
-  const playUrl = async (url: string) => {
-    audioRef.current?.pause();
-    const audio = new Audio(url);
-    audioRef.current = audio;
-    audio.addEventListener("ended", () => {
-      setIsPlaying(false);
-      setIsPaused(false);
-    });
-    audio.addEventListener("error", () => {
-      setIsPlaying(false);
-      setIsPaused(false);
-      showError("Playback Error", "Unable to play generated audio.");
-    });
-    await audio.play();
-    setIsPlaying(true);
-    setIsPaused(false);
-  };
 
   const play = useCallback(() => {
     if (language === "igbo") {
@@ -255,7 +255,7 @@ export default function TextToSpeech({
     }
 
     playBrowserSpeech();
-  }, [isPaused, language, playBrowserSpeech, playGeneratedSpeech]);
+  }, [isPaused, language, playBrowserSpeech, playGeneratedSpeech, showError]);
 
   const pause = useCallback(() => {
     if (GENERATED_AUDIO_LANGUAGES.has(language)) {

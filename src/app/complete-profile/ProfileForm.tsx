@@ -19,7 +19,7 @@ const languages = [
 
 export default function ProfileForm() {
   const [state, action, pending] = useActionState(completeProfile, initialState);
-  const { notification, close, error: showError, success } = useNotification();
+  const { notification, close, error: showError } = useNotification();
   const countries = Object.keys(LOCATION_OPTIONS);
   const [country, setCountry] = useState(countries[0] ?? "");
   const states = useMemo(
@@ -55,20 +55,13 @@ export default function ProfileForm() {
   }
 
   useEffect(() => {
-    if (state.message) {
-      if (state.success) {
-        success(
-          "Profile Complete! 🎉",
-          "Your profile has been saved. Redirecting to dashboard..."
-        );
-      } else {
-        showError(
-          "Profile Update Failed",
-          state.message || "Unable to complete your profile. Please try again."
-        );
-      }
+    if (state.message && !state.errors) {
+      showError(
+        "Profile Update Failed",
+        state.message || "Unable to complete your profile. Please try again."
+      );
     }
-  }, [state.message, state.success, showError, success]);
+  }, [state.message, state.errors, showError]);
 
   return (
     <>

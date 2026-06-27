@@ -9,7 +9,7 @@ import { useT } from "@/lib/locale-context";
 
 type Props = {
   initialLanguage: string;
-  onSave: (lang: any) => Promise<void>;
+  onSave: (lang: string) => Promise<void>;
 };
 
 const LANGUAGES = [

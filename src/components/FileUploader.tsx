@@ -41,7 +41,7 @@ function getTypeFromName(name: string): string {
 
 export default function FileUploader() {
   const router = useRouter();
-  const { notification, close, error: showError, success } = useNotification();
+  const { notification, close, error: showError } = useNotification();
   const [state, setState] = useState<UploadState>({ type: "idle" });
 
   const handleUploadComplete = useCallback(
@@ -91,7 +91,7 @@ export default function FileUploader() {
         });
       }
     },
-    [router]
+    [router, showError]
   );
 
   if (state.type === "analyzing") {

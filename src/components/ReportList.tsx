@@ -66,7 +66,7 @@ function StatusBadge({ status }: { status: Report["status"] }) {
 
 export default function ReportList({ reports, compact = false }: Props) {
   const router = useRouter();
-  const { notification, close, error: showError } = useNotification();
+  const { notification, close } = useNotification();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [search, setSearch] = useState("");

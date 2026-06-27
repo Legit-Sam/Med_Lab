@@ -16,7 +16,7 @@ export default async function SettingsPage() {
   if (!user) redirect("/sign-in");
   if (!user.profileCompleted) redirect("/complete-profile");
 
-  async function updateSettings(preferredLanguage: any) {
+  async function updateSettings(preferredLanguage: string) {
     "use server";
     const user = await getCurrentDbUser();
     if (!user) return;
