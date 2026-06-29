@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -13,7 +13,20 @@ export default function SignUpPage() {
   const [isPending, startTransition] = useTransition();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [shouldRedirect, setShouldRedirect] = useState(false);
   const { notification, close, error, success } = useNotification();
+
+  useEffect(() => {
+    if (shouldRedirect) {
+      const redirectTimer = setTimeout(() => {
+        close();
+        router.push("/complete-profile");
+        router.refresh();
+      }, 1500);
+
+      return () => clearTimeout(redirectTimer);
+    }
+  }, [shouldRedirect, close, router]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -43,20 +56,8 @@ export default function SignUpPage() {
           return;
         }
 
-        success(
-          "Account created! 🎉",
-          "Complete your profile to get started.",
-          [
-            {
-              label: "Continue",
-              onClick: () => {
-                router.push("/complete-profile");
-                router.refresh();
-              },
-              variant: "primary",
-            },
-          ]
-        );
+        success("Account created!", "Complete your profile to get started.");
+        setShouldRedirect(true);
       } catch {
         error("Error", "Unable to create account. Please check your connection and try again.");
       }

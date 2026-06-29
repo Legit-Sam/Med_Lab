@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -12,7 +12,20 @@ export default function SignInPage() {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [showPassword, setShowPassword] = useState(false);
+  const [shouldRedirect, setShouldRedirect] = useState(false);
   const { notification, close, error, success } = useNotification();
+
+  useEffect(() => {
+    if (shouldRedirect) {
+      const redirectTimer = setTimeout(() => {
+        close();
+        router.push("/dashboard");
+        router.refresh();
+      }, 1500);
+
+      return () => clearTimeout(redirectTimer);
+    }
+  }, [shouldRedirect, close, router]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -36,20 +49,8 @@ export default function SignInPage() {
           return;
         }
 
-        success(
-          "Welcome back! 👋",
-          "Redirecting to your dashboard...",
-          [
-            {
-              label: "Go to Dashboard",
-              onClick: () => {
-                router.push("/dashboard");
-                router.refresh();
-              },
-              variant: "primary",
-            },
-          ]
-        );
+        success("Welcome back!", "Redirecting to your dashboard...");
+        setShouldRedirect(true);
       } catch {
         error("Connection error", "Unable to sign in. Please check your connection and try again.");
       }
