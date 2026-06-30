@@ -4,7 +4,7 @@ import { getCurrentDbUser } from "@/lib/current-user";
 import { Card } from "@/components/ui/card";
 
 export const metadata = {
-  title: "Complete Profile - WazobiCare Nigeria",
+  title: "Complete Profile - WazobiaCare Nigeria",
 };
 
 export default async function CompleteProfilePage() {

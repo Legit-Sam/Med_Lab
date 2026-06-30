@@ -1,13 +1,13 @@
 {
   "root": {
-    "siteTitle": "WazobiCare — Understand Your Medical Lab Results",
-    "siteTitleTemplate": "%s · WazobiCare",
+    "siteTitle": "WazobiaCare — Understand Your Medical Lab Results",
+    "siteTitleTemplate": "%s · WazobiaCare",
     "siteDescription": "Upload your medical lab results and get clear, simple explanations in Yoruba, English, Hausa, or Igbo. Powered by AI. Built for clarity.",
-    "ogTitle": "WazobiCare",
+    "ogTitle": "WazobiaCare",
     "ogDescription": "Understand your lab results in your language."
   },
   "nav": {
-    "brandFirst": "Wasobi",
+    "brandFirst": "Wasobia",
     "brandLast": "Care",
     "brandSubtitle": "Medical Lab AI",
     "workspace": "Workspace",
@@ -26,7 +26,7 @@
     "mobileBrandLast": "Explain"
   },
   "dashboard": {
-    "title": "Dashboard — WazobiCare",
+    "title": "Dashboard — WazobiaCare",
     "subtitle": "Translate lab reports into Yoruba, Igbo, Hausa, or English",
     "upload": "Upload",
     "demo": "Demo",
@@ -46,7 +46,7 @@
     "labResult": "Lab Result"
   },
   "upload": {
-    "title": "Upload Lab Result — WazobiCare Nigeria",
+    "title": "Upload Lab Result — WazobiaCare Nigeria",
     "description": "Upload your medical lab result PDF or image to get a simple explanation.",
     "heading": "Upload Your Lab Result",
     "subtitle": "Upload a PDF or image of your lab results and our AI will translate each value in simple language — in your preferred local dialect.",
@@ -72,7 +72,7 @@
     "genericError": "Failed to analyze file"
   },
   "history": {
-    "title": "Report History — WazobiCare Nigeria",
+    "title": "Report History — WazobiaCare Nigeria",
     "heading": "Report History",
     "subtitle": "View, search, filter, or delete any of your past laboratory results.",
     "searchPlaceholder": "Search reports by file name…",
@@ -95,7 +95,7 @@
     "statusFailed": "Failed"
   },
   "settings": {
-    "title": "Settings — WazobiCare Nigeria",
+    "title": "Settings — WazobiaCare Nigeria",
     "heading": "Account Settings",
     "subtitle": "Configure translation options, audio settings, and language preferences.",
     "saved": "Settings saved successfully.",
@@ -111,7 +111,7 @@
     "saveSettings": "Save Settings"
   },
   "profile": {
-    "title": "User Profile — WazobiCare Nigeria",
+    "title": "User Profile — WazobiaCare Nigeria",
     "heading": "User Profile",
     "subtitle": "Manage your personal medical profile, location settings, and contact information.",
     "verifiedPatient": "Verified Patient",
@@ -147,7 +147,7 @@
     "saveFailed": "Failed to save profile. Please try again."
   },
   "completeProfile": {
-    "title": "Complete Profile - WazobiCare Nigeria",
+    "title": "Complete Profile - WazobiaCare Nigeria",
     "label": "Profile required",
     "heading": "Complete your medical profile",
     "subtitle": "This helps personalize explanations, language preferences, and regional health context before you use the medical AI system.",
@@ -188,7 +188,7 @@
     "signIn": "Sign in"
   },
   "report": {
-    "title": "Lab Report — WazobiCare Nigeria",
+    "title": "Lab Report — WazobiaCare Nigeria",
     "dashboard": "Dashboard",
     "labReport": "Lab Report",
     "processed": "Processed",
@@ -205,7 +205,7 @@
     "question1": "Which values fall outside normal ranges, and what do they mean?",
     "question2": "What lifestyle or medication changes could improve my results?",
     "question3": "When should I schedule follow-up tests to track my progress?",
-    "disclaimer": "WazobiCare provides educational translations only. Always consult a qualified healthcare professional for medical decisions.",
+    "disclaimer": "WazobiaCare provides educational translations only. Always consult a qualified healthcare professional for medical decisions.",
     "quickLinks": "Quick Links",
     "viewAllReports": "View all reports",
     "uploadNewResult": "Upload new result",
@@ -226,7 +226,7 @@
     "ttsNotSupported": "Text-to-speech is not supported in your browser."
   },
   "audioReader": {
-    "title": "Audio Reader — WazobiCare Nigeria",
+    "title": "Audio Reader — WazobiaCare Nigeria",
     "description": "Listen to your medical laboratory results translated in local dialects.",
     "noReports": "No reports available to read",
     "noReportsDesc": "You can listen to laboratory results in Yoruba, Igbo, Hausa, or English once a report analysis has been completed successfully.",
@@ -262,7 +262,7 @@
     "deleting": "Deleting..."
   },
   "demo": {
-    "title": "Demo Lab Report — WazobiCare Nigeria",
+    "title": "Demo Lab Report — WazobiaCare Nigeria",
     "dashboard": "Dashboard",
     "notAvailable": "Demo report is not available. Contact support.",
     "demoReport": "Demo Report",
@@ -270,7 +270,7 @@
     "demo": "Demo",
     "aboutDemo": "About This Demo",
     "demoMode": "Demo Mode",
-    "demoModeDesc": "A pre-loaded lab report showing how WazobiCare translates results across all four supported languages.",
+    "demoModeDesc": "A pre-loaded lab report showing how WazobiaCare translates results across all four supported languages.",
     "demoFeature1": "Switch between English, Yoruba, Hausa, Igbo",
     "demoFeature2": "Browse Summary, Findings & Interpretation tabs",
     "demoFeature3": "Listen to Yoruba & Hausa audio (real generated audio)",
@@ -293,7 +293,7 @@
     "heroDesc2": ". Safe, educational, and instant.",
     "uploadLabResultFree": "Upload Lab Result Free",
     "seeHowItWorks": "See How it Works",
-    "heroImageAlt": "WazobiCare Premium Dashboard Overview",
+    "heroImageAlt": "WazobiaCare Premium Dashboard Overview",
     "featuresHeading": "Designed for Patients & Caregivers",
     "featuresDesc": "No more Googling panic. We explain your metrics so you can have structured discussions with doctors.",
     "featureInstantUpload": "Instant Upload",
@@ -335,7 +335,7 @@
     "accessibilityTitle": "Accessibility First Approach",
     "accessibilityDesc": "Our platform fully supports the screen-reader-friendly Web Speech API, enabling visually impaired or non-literate patients to listen to reports in their languages. Keyboard controls are enabled across the system.",
     "testimonialsTitle": "Stories of Impact",
-    "testimonialsDesc": "See how WazobiCare helps families across Nigeria take control of their diagnoses.",
+    "testimonialsDesc": "See how WazobiaCare helps families across Nigeria take control of their diagnoses.",
     "testimonial1Quote": "As an elderly patient, lab sheets looked like a foreign code. Hearing my blood counts in Yoruba made me feel in control of my health.",
     "testimonial1Author": "Baba Tunde",
     "testimonial1Role": "Patient from Ibadan",
@@ -354,9 +354,9 @@
     "ctaTitle": "Democratize Your Biometrics Today",
     "ctaDesc": "Join thousands of patients understanding their records in seconds.",
     "createFreeAccount": "Create Free Account",
-    "footerBrand": "WazobiCare Nigeria",
-    "footerDisclaimer": "Disclaimer: WazobiCare leverages Gemini AI models for biometric context extraction. It is an educational tool and does not provide clinical diagnostic reports. Always discuss tests with certified clinical professionals.",
-    "footerCopyright": "© {year} WazobiCare. All rights reserved."
+    "footerBrand": "WazobiaCare Nigeria",
+    "footerDisclaimer": "Disclaimer: WazobiaCare leverages Gemini AI models for biometric context extraction. It is an educational tool and does not provide clinical diagnostic reports. Always discuss tests with certified clinical professionals.",
+    "footerCopyright": "© {year} WazobiaCare. All rights reserved."
   },
   "errors": {
     "unauthorized": "Unauthorized",
@@ -393,7 +393,7 @@
     "analysisTimedOut": "Analysis timed out. Please try again."
   },
   "pdf": {
-    "organizationName": "WazobiCare Nigeria",
+    "organizationName": "WazobiaCare Nigeria",
     "reportSubtitle": "Clinical Lab Report",
     "patientName": "Patient Name",
     "email": "Email",
@@ -405,7 +405,7 @@
     "igboSection": "Igbo (Asụsụ Igbo)",
     "originalOcrText": "Original OCR Text",
     "disclaimer": "Disclaimer",
-    "disclaimerText": "WazobiCare provides educational translations and AI-powered analysis of lab reports. This document is not a clinical diagnosis. Always consult a qualified healthcare professional for medical decisions. Generated by WazobiCare Nigeria.",
+    "disclaimerText": "WazobiaCare provides educational translations and AI-powered analysis of lab reports. This document is not a clinical diagnosis. Always consult a qualified healthcare professional for medical decisions. Generated by WazobiaCare Nigeria.",
     "pageNumber": "Page {current} of {total}",
     "clinicalReportSuffix": "'s Clinical Report.pdf",
     "demoClinicalReportSuffix": "'s Demo Clinical Report.pdf",

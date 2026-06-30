@@ -8,7 +8,7 @@ import { FileText } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
 export const metadata = {
-  title: "Report History — WazobiCare Nigeria",
+  title: "Report History — WazobiaCare Nigeria",
 };
 
 export default async function HistoryPage() {

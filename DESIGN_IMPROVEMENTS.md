@@ -1,7 +1,7 @@
-# WazobiCare Premium Design System Overhaul
+# WazobiaCare Premium Design System Overhaul
 
 ## 🎨 Overview
-Complete redesign of WazobiCare from a functional MVP to a premium SaaS product with world-class UI/UX. All components follow a consistent design language inspired by Stripe, Linear, and Vercel.
+Complete redesign of WazobiaCare from a functional MVP to a premium SaaS product with world-class UI/UX. All components follow a consistent design language inspired by Stripe, Linear, and Vercel.
 
 ---
 

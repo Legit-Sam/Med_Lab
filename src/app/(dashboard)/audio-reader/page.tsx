@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import AudioReaderDashboard from "@/components/AudioReaderDashboard";
 
 export const metadata = {
-  title: "Audio Reader — WazobiCare Nigeria",
+  title: "Audio Reader — WazobiaCare Nigeria",
   description: "Listen to your medical laboratory results translated in local dialects.",
 };
 

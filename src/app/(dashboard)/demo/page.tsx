@@ -7,7 +7,7 @@ import { ArrowLeft, FileText, Calendar, CheckSquare, Shield, Download } from "lu
 import { format } from "date-fns";
 
 export const metadata = {
-  title: "Demo Lab Report — WazobiCare Nigeria",
+  title: "Demo Lab Report — WazobiaCare Nigeria",
 };
 
 export default async function DemoPage() {
@@ -97,7 +97,7 @@ export default async function DemoPage() {
               <span>Demo Mode</span>
             </h3>
             <p className="text-[11px] text-muted-foreground leading-relaxed">
-              A pre-loaded lab report showing how WazobiCare translates results across all four supported languages.
+              A pre-loaded lab report showing how WazobiaCare translates results across all four supported languages.
             </p>
             <ul className="space-y-2 text-[11px] text-foreground/80">
               <li className="flex gap-2"><span className="text-accent">•</span><span>Switch between English, Yoruba, Hausa, Igbo</span></li>

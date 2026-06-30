@@ -92,7 +92,7 @@ export default async function SystemHealthPage() {
           <h1 className="text-2xl font-bold text-foreground" style={{ fontFamily: "var(--font-display)" }}>
             System Health
           </h1>
-          <p className="text-sm text-muted-foreground">Observability dashboard for WazobiCare</p>
+          <p className="text-sm text-muted-foreground">Observability dashboard for WazobiaCare</p>
         </div>
 
         {error && (

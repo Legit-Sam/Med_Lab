@@ -21,7 +21,7 @@ import {
 import { format } from "date-fns";
 
 export const metadata = {
-  title: "Lab Report — WazobiCare Nigeria",
+  title: "Lab Report — WazobiaCare Nigeria",
 };
 
 type Props = {
@@ -198,7 +198,7 @@ export default async function ReportPage({ params }: Props) {
 
             <div className="pt-3 border-t border-border/40">
               <p className="text-[10px] text-muted-foreground italic leading-relaxed">
-                WazobiCare provides educational translations only. Always consult a qualified healthcare professional for medical decisions.
+                WazobiaCare provides educational translations only. Always consult a qualified healthcare professional for medical decisions.
               </p>
             </div>
           </div>

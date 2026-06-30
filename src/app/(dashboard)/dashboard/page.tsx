@@ -24,7 +24,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 export const metadata = {
-  title: "Dashboard — WazobiCare",
+  title: "Dashboard — WazobiaCare",
 };
 
 export default async function DashboardPage() {

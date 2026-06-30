@@ -3,7 +3,7 @@ import { ShieldCheck, Zap, Globe, Info } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
 export const metadata = {
-  title: "Upload Lab Result — WazobiCare Nigeria",
+  title: "Upload Lab Result — WazobiaCare Nigeria",
   description: "Upload your medical lab result PDF or image to get a simple explanation.",
 };
 

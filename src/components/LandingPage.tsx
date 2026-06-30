@@ -161,7 +161,7 @@ export default function LandingPage() {
               <Activity className="h-5 w-5 text-accent-foreground" />
             </div>
             <span className="text-lg font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-              Wazobi<span className="text-accent">Care</span>
+              Wazobia<span className="text-accent">Care</span>
             </span>
           </motion.div>
           <div className="flex items-center gap-3">
@@ -271,7 +271,7 @@ export default function LandingPage() {
             <div className="overflow-hidden rounded-xl border border-border/40 relative aspect-video w-full bg-muted">
               <Image
                 src="/hero_dashboard.png"
-                alt="WazobiCare Premium Dashboard"
+                alt="WazobiaCare Premium Dashboard"
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 1200px"
                 className="object-cover"
@@ -468,7 +468,7 @@ export default function LandingPage() {
             <div className="text-center mb-16 space-y-4">
               <h2 className="text-3xl font-bold tracking-tight">Stories of Impact</h2>
               <p className="text-lg text-muted-foreground">
-                See how WazobiCare helps families across Nigeria take control of their diagnoses.
+                See how WazobiaCare helps families across Nigeria take control of their diagnoses.
               </p>
             </div>
 
@@ -592,15 +592,15 @@ export default function LandingPage() {
             <div className="w-6 h-6 rounded-lg bg-accent flex items-center justify-center">
               <Activity className="w-3.5 h-3.5 text-accent-foreground" />
             </div>
-            <span className="font-bold text-foreground">WazobiCare Nigeria</span>
+            <span className="font-bold text-foreground">WazobiaCare Nigeria</span>
           </div>
           <p className="text-xs text-muted-foreground max-w-lg mx-auto leading-relaxed">
-            Disclaimer: WazobiCare leverages Gemini AI models for biometric context extraction. It is an
+            Disclaimer: WazobiaCare leverages Gemini AI models for biometric context extraction. It is an
             educational tool and does not provide clinical diagnostic reports. Always discuss tests with
             certified clinical professionals.
           </p>
           <p className="text-xs text-muted-foreground/60">
-            &copy; {new Date().getFullYear()} WazobiCare. All rights reserved.
+            &copy; {new Date().getFullYear()} WazobiaCare. All rights reserved.
           </p>
         </div>
       </footer>
