@@ -3,6 +3,7 @@ import { reports } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { notFound, redirect } from "next/navigation";
 import ResultCard from "@/components/ResultCard";
+import RetryAnalysisButton from "@/components/RetryAnalysisButton";
 import Link from "next/link";
 import { getCurrentDbUser } from "@/lib/current-user";
 import {
@@ -15,7 +16,6 @@ import {
   CheckSquare,
   Shield,
   Clock,
-  RefreshCw,
   Download,
 } from "lucide-react";
 import { format } from "date-fns";
@@ -155,12 +155,9 @@ export default async function ReportPage({ params }: Props) {
               </div>
               <div className="space-y-1">
                 <p className="text-destructive font-semibold text-sm">Analysis failed</p>
-                <p className="text-muted-foreground text-xs max-w-sm mx-auto">The AI could not extract readable lab data from this file. Try uploading a clearer scan.</p>
+                <p className="text-muted-foreground text-xs max-w-sm mx-auto">The AI could not extract readable lab data from this file. Try uploading a clearer scan or retry with the same file.</p>
               </div>
-              <Link href="/upload" className="inline-flex items-center gap-1.5 h-10 px-4 rounded-xl bg-primary text-primary-foreground text-xs font-semibold hover:opacity-90 transition-all">
-                <RefreshCw className="w-3.5 h-3.5" />
-                Try Again
-              </Link>
+              <RetryAnalysisButton reportId={report.id} />
             </div>
           )}
         </div>

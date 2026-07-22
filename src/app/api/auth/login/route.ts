@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm";
 import { verifyPassword } from "@/lib/password";
 import { createSession } from "@/lib/auth";
 import { createRequestId, getErrorMessage } from "@/lib/api-errors";
+import { checkRateLimit, rateLimitExceeded } from "@/lib/rate-limit";
 
 export async function POST(req: NextRequest) {
   const requestId = createRequestId();
@@ -18,6 +19,12 @@ export async function POST(req: NextRequest) {
         { error: "Email and password are required." },
         { status: 400 }
       );
+    }
+
+    const ip = req.headers.get("x-forwarded-for") || "unknown";
+    const rateCheck = await checkRateLimit(`login:${ip}`, "login");
+    if (!rateCheck.allowed) {
+      return rateLimitExceeded("login");
     }
 
     const user = await db.query.users.findFirst({
@@ -52,15 +59,9 @@ export async function POST(req: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
-    console.error("Login error:", { requestId, error });
+    console.error("Login error:", requestId, getErrorMessage(error));
     return NextResponse.json(
-      {
-        error:
-          process.env.NODE_ENV === "production"
-            ? "Login failed. Please try again."
-            : getErrorMessage(error),
-        requestId,
-      },
+      { error: "Login failed. Please try again." },
       { status: 500 }
     );
   }

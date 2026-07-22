@@ -83,7 +83,7 @@ export async function analyzeLabResult(
   extractedText: string
 ): Promise<AnalysisResult> {
   const model = genAI.getGenerativeModel({
-    model: "gemini-2.5-flash",
+    model: "gemini-3.6-flash",
     generationConfig: { responseMimeType: "application/json" },
   });
 
@@ -114,7 +114,7 @@ export async function analyzeLabImage(
   mimeType: "image/jpeg" | "image/png" | "image/webp" | "image/gif"
 ): Promise<{ extractedText: string; analysis: AnalysisResult }> {
   const model = genAI.getGenerativeModel({
-    model: "gemini-2.5-flash",
+    model: "gemini-3.6-flash",
     generationConfig: { responseMimeType: "application/json" },
   });
 

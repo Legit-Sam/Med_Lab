@@ -17,7 +17,7 @@ type UploadState =
   | { type: "uploading"; progress: number }
   | { type: "analyzing" }
   | { type: "success"; reportId: string }
-  | { type: "error"; message: string };
+  | { type: "error"; message: string; reportId?: string };
 
 type UploadedFile = { fileUrl: string; name: string; type?: string };
 type AnalyzeResponse = {
@@ -51,6 +51,8 @@ export default function FileUploader() {
       const file = res[0];
       setState({ type: "analyzing" });
 
+      let reportId: string | undefined;
+
       try {
         const response = await fetch("/api/analyze", {
           method: "POST",
@@ -69,18 +71,19 @@ export default function FileUploader() {
         }
 
         const jobId = data.jobId;
+        reportId = data.reportId;
         if (!jobId) {
           throw new Error("Analysis could not be queued.");
         }
 
-        const reportId = await pollForCompletion(jobId);
-        if (!reportId) {
+        const resultId = await pollForCompletion(jobId);
+        if (!resultId) {
           throw new Error("Analysis completed without a report ID.");
         }
 
-        setState({ type: "success", reportId });
+        setState({ type: "success", reportId: resultId });
         setTimeout(() => {
-          router.push(`/report/${reportId}`);
+          router.push(`/report/${resultId}`);
         }, 1200);
       } catch (err) {
         const message = err instanceof Error ? err.message : "Failed to analyze file";
@@ -88,6 +91,7 @@ export default function FileUploader() {
         setState({
           type: "error",
           message,
+          reportId: reportId || undefined,
         });
       }
     },
@@ -158,9 +162,37 @@ export default function FileUploader() {
               <p className="text-muted-foreground text-xs leading-relaxed">{state.message}</p>
             </div>
           </Card>
-          <Button variant="outline" className="w-full" onClick={() => setState({ type: "idle" })}>
-            Try again
-          </Button>
+          <div className="flex gap-2">
+            {state.reportId && (
+              <Button
+                variant="accent"
+                className="flex-1"
+                onClick={async () => {
+                  setState({ type: "analyzing" });
+                  try {
+                    const res = await fetch(`/api/reports/${state.reportId}/retry`, {
+                      method: "POST",
+                    });
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.error || "Retry failed");
+                    const resultId = await pollForCompletion(data.jobId);
+                    if (!resultId) throw new Error("Analysis completed without a report ID.");
+                    setState({ type: "success", reportId: resultId });
+                    setTimeout(() => router.push(`/report/${resultId}`), 1200);
+                  } catch (err) {
+                    const msg = err instanceof Error ? err.message : "Retry failed";
+                    showError("Retry Failed", msg);
+                    setState({ type: "error", message: msg, reportId: state.reportId });
+                  }
+                }}
+              >
+                Retry analysis
+              </Button>
+            )}
+            <Button variant="outline" className="flex-1" onClick={() => setState({ type: "idle" })}>
+              Upload different file
+            </Button>
+          </div>
         </div>
       </>
     );

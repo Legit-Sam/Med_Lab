@@ -115,6 +115,13 @@ export const ttsJobs = pgTable("tts_jobs", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+export const rateLimits = pgTable("rate_limits", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  identifier: text("identifier").notNull(),
+  action: text("action").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export const uiTranslations = pgTable("ui_translations", {
   id: uuid("id").defaultRandom().primaryKey(),
   language: languageEnum("language").notNull(),
@@ -135,3 +142,5 @@ export type InsertTtsJob = typeof ttsJobs.$inferInsert;
 export type SelectTtsJob = typeof ttsJobs.$inferSelect;
 export type InsertUiTranslation = typeof uiTranslations.$inferInsert;
 export type SelectUiTranslation = typeof uiTranslations.$inferSelect;
+export type InsertRateLimit = typeof rateLimits.$inferInsert;
+export type SelectRateLimit = typeof rateLimits.$inferSelect;

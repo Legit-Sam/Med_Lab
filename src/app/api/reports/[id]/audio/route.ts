@@ -108,25 +108,18 @@ export async function POST(
         }
       })
       .catch((err) => {
-        console.error("Failed to dispatch TTS job:", err);
+        console.error("Failed to dispatch TTS job:", err instanceof Error ? err.message : err);
         db.update(ttsJobs)
-          .set({ status: "failed", error: err.message, updatedAt: new Date() })
+          .set({ status: "failed", error: "Failed to contact TTS server", updatedAt: new Date() })
           .where(eq(ttsJobs.id, jobId))
           .catch(() => {});
       });
 
     return NextResponse.json({ jobId, status: "pending" });
   } catch (error) {
-    const message = getErrorMessage(error);
-    console.error("Report audio API error:", { requestId, message, error });
+    console.error("Report audio API error:", requestId, getErrorMessage(error));
     return NextResponse.json(
-      {
-        error:
-          process.env.NODE_ENV === "production"
-            ? `Failed to generate report audio. Reference: ${requestId}`
-            : message,
-        requestId,
-      },
+      { error: `Failed to generate report audio. Reference: ${requestId}` },
       { status: 500 }
     );
   }

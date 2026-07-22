@@ -11,8 +11,11 @@ import {
   Clock,
   Trash2,
   Search,
+  RotateCcw,
+  Loader2,
 } from "lucide-react";
 import { useState, useMemo, useCallback } from "react";
+import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Modal } from "@/components/ui/modal";
 import { useNotification } from "@/hooks/useNotification";
@@ -69,6 +72,7 @@ export default function ReportList({ reports, compact = false }: Props) {
   const { notification, close } = useNotification();
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [retryingId, setRetryingId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<
     "all" | "completed" | "processing" | "failed"
@@ -88,6 +92,38 @@ export default function ReportList({ reports, compact = false }: Props) {
       setDeletingId(null);
     }
   }, [deleteTarget, router]);
+
+  const handleRetry = useCallback(async (reportId: string) => {
+    setRetryingId(reportId);
+    try {
+      const res = await fetch(`/api/reports/${reportId}/retry`, { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Retry failed");
+
+      // Poll for completion
+      const maxAttempts = 150;
+      for (let i = 0; i < maxAttempts; i++) {
+        const pr = await fetch(`/api/analyze-status/${data.jobId}`);
+        const pd = await pr.json();
+        if (pd.status === "completed") {
+          toast.success("Analysis complete!");
+          router.push(`/report/${reportId}`);
+          return;
+        }
+        if (pd.status === "failed") {
+          throw new Error(pd.error || "Analysis failed");
+        }
+        await new Promise((r) => setTimeout(r, 2000));
+      }
+      throw new Error("Analysis timed out");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Retry failed";
+      toast.error(msg);
+      router.refresh();
+    } finally {
+      setRetryingId(null);
+    }
+  }, [router]);
 
   const filteredReports = useMemo(() => {
     return reports.filter((report) => {
@@ -217,6 +253,24 @@ export default function ReportList({ reports, compact = false }: Props) {
                     <div className="flex items-center gap-0.5">
                       {isClickable && (
                         <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-accent transition-colors" />
+                      )}
+                      {report.status === "failed" && (
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            handleRetry(report.id);
+                          }}
+                          disabled={retryingId === report.id}
+                          aria-label="Retry analysis"
+                          className="p-1.5 rounded-lg text-muted-foreground hover:text-accent hover:bg-accent/10 transition-all"
+                        >
+                          {retryingId === report.id ? (
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          ) : (
+                            <RotateCcw className="w-3.5 h-3.5" />
+                          )}
+                        </button>
                       )}
                       <button
                         id={`delete-report-${report.id}`}

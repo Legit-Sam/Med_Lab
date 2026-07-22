@@ -5,6 +5,7 @@ import { processLabFile } from "@/lib/ocr";
 import { eq } from "drizzle-orm";
 import { getCurrentDbUser } from "@/lib/current-user";
 import { createRequestId, getErrorMessage } from "@/lib/api-errors";
+import { checkRateLimit, rateLimitExceeded } from "@/lib/rate-limit";
 import { logger } from "@/lib/logger";
 
 export async function POST(req: NextRequest) {
@@ -15,6 +16,12 @@ export async function POST(req: NextRequest) {
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+
+    const rateCheck = await checkRateLimit(user.id, "analyze");
+    if (!rateCheck.allowed) {
+      return rateLimitExceeded("analyze");
+    }
+
     if (!user.profileCompleted) {
       return NextResponse.json(
         { error: "Complete your profile before analyzing reports." },
@@ -61,16 +68,9 @@ export async function POST(req: NextRequest) {
       status: "queued",
     });
   } catch (error) {
-    const message = getErrorMessage(error);
-    logger.error("Analyze API error", { requestId, error });
+    logger.error("Analyze API error", { requestId, error: getErrorMessage(error) });
     return NextResponse.json(
-      {
-        error:
-          process.env.NODE_ENV === "production"
-            ? `Analysis could not start. Reference: ${requestId}`
-            : message,
-        requestId,
-      },
+      { error: `Analysis could not start. Reference: ${requestId}` },
       { status: 500 }
     );
   }

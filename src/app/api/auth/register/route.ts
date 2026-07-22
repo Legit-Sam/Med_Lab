@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm";
 import { hashPassword } from "@/lib/password";
 import { createSession } from "@/lib/auth";
 import { createRequestId, getErrorMessage } from "@/lib/api-errors";
+import { checkRateLimit, rateLimitExceeded } from "@/lib/rate-limit";
 
 export async function POST(req: NextRequest) {
   const requestId = createRequestId();
@@ -18,6 +19,12 @@ export async function POST(req: NextRequest) {
         { error: "Email and password are required." },
         { status: 400 }
       );
+    }
+
+    const ip = req.headers.get("x-forwarded-for") || "unknown";
+    const rateCheck = await checkRateLimit(`register:${ip}`, "register");
+    if (!rateCheck.allowed) {
+      return rateLimitExceeded("register");
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -71,15 +78,9 @@ export async function POST(req: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    console.error("Registration error:", { requestId, error });
+    console.error("Registration error:", requestId, getErrorMessage(error));
     return NextResponse.json(
-      {
-        error:
-          process.env.NODE_ENV === "production"
-            ? "Registration failed. Please try again."
-            : getErrorMessage(error),
-        requestId,
-      },
+      { error: "Registration failed. Please try again." },
       { status: 500 }
     );
   }

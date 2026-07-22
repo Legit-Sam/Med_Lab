@@ -24,9 +24,9 @@ export async function GET(
       error: job.error,
     });
   } catch (err) {
-    console.error("TTS status error:", err);
+    console.error("TTS status error:", err instanceof Error ? err.message : err);
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : "Internal error" },
+      { error: "Failed to check TTS status." },
       { status: 500 }
     );
   }

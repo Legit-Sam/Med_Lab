@@ -61,9 +61,9 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
   } catch (err) {
-    console.error("TTS callback error:", err);
+    console.error("TTS callback error:", err instanceof Error ? err.message : err);
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : "Internal error" },
+      { error: "Internal error" },
       { status: 500 }
     );
   }

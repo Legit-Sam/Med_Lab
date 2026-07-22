@@ -9,7 +9,8 @@
     "lint": "eslint",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "db:generate": "drizzle-kit generate"
+    "db:generate": "drizzle-kit generate",
+    "db:shell": "node scripts/db-shell.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",

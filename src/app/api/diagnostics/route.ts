@@ -9,7 +9,6 @@ const envChecks = [
   "DATABASE_URL",
   "GEMINI_API_KEY",
   "UPLOADTHING_TOKEN",
-  "ELEVENLABS_API_KEY",
 ] as const;
 
 export async function GET() {
@@ -27,7 +26,7 @@ export async function GET() {
     await db.execute(sql`select 1`);
     database = { ok: true };
   } catch (error) {
-    database = { ok: false, error: getErrorMessage(error) };
+    database = { ok: false, error: "Database connection failed" };
   }
 
   return NextResponse.json({

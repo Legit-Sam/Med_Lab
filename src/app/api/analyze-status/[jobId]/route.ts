@@ -47,7 +47,10 @@ async function processJob(jobId: string): Promise<void> {
       metadata: { reportId: report.id, jobId: job.id },
     });
   } catch (processingError) {
-    const message = getErrorMessage(processingError);
+    logger.error("Analysis processing failed", {
+      error: getErrorMessage(processingError),
+      metadata: { jobId },
+    });
 
     try {
       const job = await db.query.analysisJobs.findFirst({
@@ -65,15 +68,13 @@ async function processJob(jobId: string): Promise<void> {
           .set({
             status: "failed",
             failedAt: new Date(),
-            errorMessage: message,
+            errorMessage: "Analysis failed",
           })
           .where(eq(analysisJobs.id, job.id));
       }
     } catch {
       // Best-effort failure recording
     }
-
-    logger.error("Analysis processing failed", { error: processingError, metadata: { jobId } });
   }
 }
 
@@ -153,8 +154,7 @@ export async function GET(
 
     return NextResponse.json({ status: job.status });
   } catch (error) {
-    const message = getErrorMessage(error);
-    logger.error("Analyze status error", { error });
-    return NextResponse.json({ error: message }, { status: 500 });
+    logger.error("Analyze status error", { error: getErrorMessage(error) });
+    return NextResponse.json({ error: "Analysis status check failed." }, { status: 500 });
   }
 }
